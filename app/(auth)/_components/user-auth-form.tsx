@@ -16,7 +16,7 @@ import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import GithubSignInButton from './github-auth-button';
+import FacebookSignInButton from './facebook-auth-button';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -40,7 +40,7 @@ export default function UserAuthForm() {
     startTransition(() => {
       signIn('credentials', {
         email: data.email,
-        callbackUrl: callbackUrl ?? '/dashboard'
+        callbackUrl: callbackUrl ?? '/admin'
       });
       toast.success('Signed In Successfully!');
     });
@@ -87,7 +87,7 @@ export default function UserAuthForm() {
           </span>
         </div>
       </div>
-      <GithubSignInButton />
+      <FacebookSignInButton />
     </>
   );
 }
