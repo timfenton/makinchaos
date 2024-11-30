@@ -1,27 +1,34 @@
 import { integer, numeric, PgColumn, pgEnum, pgTable, PgTableWithColumns, serial, text, timestamp } from 'drizzle-orm/pg-core';
-import db from './db'
-import { count, ilike, eq } from 'drizzle-orm/sql';
+import db from '../db'
+import { count, ilike, eq, desc, asc } from 'drizzle-orm/sql';
 import { users } from './users';
+import { OrderByOperators, getTableColumns, ColumnsWithTable, relations } from 'drizzle-orm';
+import { productsToOrders } from './productsToOrders';
 
-export const statusEnum = pgEnum('status', ['active', 'inactive', 'archived']);
+export const statusEnum = pgEnum('status', ['placed', 'in_progress', 'shipped', 'completed']);
+export const paidEnum = pgEnum('paid', ['paid', 'not_paid', 'needs_price']);
 
 export const orders = pgTable('orders', {
-  id: serial('id').primaryKey(),
-  customer: one(users, {
-    fields: [users.],
-    references: [users.id]
-  }),
-  status: statusEnum('status').notNull(),
-  price: numeric('price', { precision: 10, scale: 2 }).notNull(),
-  stock: integer('stock').notNull(),
-  availableAt: timestamp('available_at').notNull()
+  id: serial().primaryKey(),
+  customerId: integer().notNull(), 
+  status: statusEnum().notNull(),
+  orderPaid: paidEnum().notNull(),
+  price: numeric({ precision: 10, scale: 2 }),
 });
 
+export const ordersRelations = relations(orders, ({one, many}) => ({
+  customer: one(users, {
+    fields: [orders.customerId],
+    references: [users.id],
+  }),
+  products: many(productsToOrders),
+}));
+
 export type SelectOrder = typeof orders.$inferSelect;
+export type InsertOrder = typeof orders.$inferInsert;
 
 export async function getOrders(
-  search: string,
-  offset: number
+  orderBy: 
 ): Promise<{
   orders: SelectOrder[];
   newOffset: number | null;
