@@ -33,3 +33,9 @@ export interface FooterItem {
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;
+
+export interface SearchablePageableProps {
+  search: string,
+  page?: number,
+  limit?: number
+}

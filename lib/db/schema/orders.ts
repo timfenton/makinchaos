@@ -1,9 +1,10 @@
 import { integer, numeric, PgColumn, pgEnum, pgTable, PgTableWithColumns, serial, text, timestamp } from 'drizzle-orm/pg-core';
 import db from '../db'
-import { count, ilike, eq, desc, asc } from 'drizzle-orm/sql';
+import { count, ilike, eq, desc, asc, or, SQL } from 'drizzle-orm/sql';
 import { users } from './users';
 import { OrderByOperators, getTableColumns, ColumnsWithTable, relations } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
+import { getItemsPaged, OrderBy, PagedResponse } from '@/lib/utils';
 
 export const statusEnum = pgEnum('status', ['placed', 'in_progress', 'shipped', 'completed']);
 export const paidEnum = pgEnum('paid', ['paid', 'not_paid', 'needs_price']);
@@ -14,6 +15,7 @@ export const orders = pgTable('orders', {
   status: statusEnum().notNull(),
   orderPaid: paidEnum().notNull(),
   price: numeric({ precision: 10, scale: 2 }),
+  submitted: timestamp().defaultNow()
 });
 
 export const ordersRelations = relations(orders, ({one, many}) => ({
@@ -24,42 +26,22 @@ export const ordersRelations = relations(orders, ({one, many}) => ({
   products: many(productsToOrders),
 }));
 
-export type SelectOrder = typeof orders.$inferSelect;
-export type InsertOrder = typeof orders.$inferInsert;
+export type SelectOrders = typeof orders.$inferSelect;
+export type NewOrder = typeof orders.$inferInsert;
+
+export async function getOrdersForCustomer(customerId: number) {
+  return await getItemsPaged(orders, eq(orders.customerId, customerId), { column: 'submitted', direction: asc});
+}
 
 export async function getOrders(
-  orderBy: 
-): Promise<{
-  orders: SelectOrder[];
-  newOffset: number | null;
-  totalOrders: number;
-}> {
-  // Always search the full table, not per page
-  if (search) {
-    return {
-      orders: await db
-        .select()
-        .from(orders)
-        .where(ilike(orders.name, `%${search}%`))
-        .limit(1000),
-      newOffset: null,
-      totalOrders: 0
-    };
-  }
+  where?: SQL<unknown>,
+  orderBy?: OrderBy<SelectOrders>,
+  page?: number,
+  limit?: number,
+): Promise<PagedResponse<SelectOrders>> {
+  const productResult = await getItemsPaged(orders, where, orderBy, page, limit);
 
-  if (offset === null) {
-    return { orders: [], newOffset: null, totalOrders: 0 };
-  }
-
-  let totalOrders = await db.select({ count: count() }).from(orders);
-  let moreOrders = await db.select().from(orders).limit(5).offset(offset);
-  let newOffset = moreOrders.length >= 5 ? offset + 5 : null;
-
-  return {
-    orders: moreOrders,
-    newOffset,
-    totalOrders: totalOrders[0].count
-  };
+  return productResult;
 }
 
 export async function deleteOrderById(id: number) {

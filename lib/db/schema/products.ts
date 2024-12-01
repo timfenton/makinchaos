@@ -1,6 +1,6 @@
 import { numeric, pgEnum, pgTable, serial, text } from 'drizzle-orm/pg-core';
 import db from '../db'
-import { count, ilike, eq } from 'drizzle-orm/sql';
+import { count, ilike, eq, or } from 'drizzle-orm/sql';
 import { relations } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
 import { filamentsToProducts } from './filamentsToProducts';
@@ -24,41 +24,58 @@ export const productsRelations = relations(products, ({many}) => ({
 }));
 
 export type SelectProduct = typeof products.$inferSelect;
+export type NewProduct = typeof products.$inferInsert;
 
 export async function getProducts(
   search: string,
-  offset: number
+  page?: number,
+  limit?: number
 ): Promise<{
   products: SelectProduct[];
-  newOffset: number | null;
+  nextPage: number | null;
+  totalPages: number;
   totalProducts: number;
 }> {
-  // Always search the full table, not per page
-  if (search) {
-    return {
-      products: await db
-        .select()
-        .from(products)
-        .where(ilike(products.name, `%${search}%`))
-        .limit(1000),
-      newOffset: null,
-      totalProducts: 0
-    };
-  }
-
-  if (offset === null) {
-    return { products: [], newOffset: null, totalProducts: 0 };
-  }
-
   let totalProducts = await db.select({ count: count() }).from(products);
-  let moreProducts = await db.select().from(products).limit(5).offset(offset);
-  let newOffset = moreProducts.length >= 5 ? offset + 5 : null;
+
+  const currentPage = page ?? 1;
+  const currentPageIndex = currentPage - 1;
+  const resultLimit = (limit || 1000);
+
+  const offset = (currentPageIndex * resultLimit);
+  const nextPage = totalProducts[0].count > (currentPage * resultLimit) ? currentPage + 1 : null;
+
+  const productResult = search ? 
+    await db
+      .select()
+      .from(products)
+      .where(or(ilike(products.description, `%${search}%`)))
+      .offset(offset)
+      .limit(resultLimit) 
+    : 
+    await db.select().from(products).limit(resultLimit).offset(offset);
 
   return {
-    products: moreProducts,
-    newOffset,
+    products: productResult,
+    nextPage: nextPage,
+    totalPages: Math.ceil(totalProducts[0].count / resultLimit),
     totalProducts: totalProducts[0].count
   };
+}
+
+export async function updateProduct( id: number, product: Omit<Partial<NewProduct>, 'id'>){
+  return await db
+    .update(products)
+    .set(product)
+    .where(eq(products.id, id))
+    .returning()
+}
+
+export async function createProduct( product: NewProduct ) {
+  return await db
+    .insert(products)
+    .values(product)
+    .returning();
 }
 
 export async function deleteProductById(id: number) {
