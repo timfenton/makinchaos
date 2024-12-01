@@ -1,19 +1,25 @@
-import { pgEnum, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import db from '../db'
 import { count, ilike, eq, or } from 'drizzle-orm/sql';
 import { relations } from 'drizzle-orm';
 import { orders } from './orders';
+import { UUID } from 'crypto';
 
 export const statusEnum = pgEnum('status', ['active', 'inactive', 'archived']);
 export const roleEnum = pgEnum('role', ['admin', 'customer']);
 
-export const users = pgTable('users', {
-  id: serial().primaryKey(),
-  roles: roleEnum().array().default(['customer']),
-  facebookId: text().notNull().unique(),
-  email: text().notNull(),
+export const users = pgTable('user', {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   firstName: text().notNull(),
   lastName: text().notNull(),
+  name: text("name"),
+  roles: roleEnum().array().default(['customer']),
+  facebookId: text().notNull().unique(),
+  email: text().notNull().unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -73,6 +79,6 @@ export async function getUsers(
   };
 }
 
-export async function deleteUserById(id: number) {
+export async function deleteUserById(id: UUID) {
   await db.delete(users).where(eq(users.id, id));
 }

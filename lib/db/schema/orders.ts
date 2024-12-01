@@ -38,8 +38,8 @@ export async function getOrdersWithProducts() {
   const ordersWithProductsAndUsers = await db
     .select()
     .from(orders)
-    .leftJoin(productsToOrders, eq(productsToOrders.orderId, orders.id)) // Join productsToOrders
-    .leftJoin(products, eq(products.id, productsToOrders.productId)) // Join products table
+    .leftJoin(productsToOrders, eq(productsToOrders.orderId, orders.id))
+    .leftJoin(products, eq(products.id, productsToOrders.productId))
     .leftJoin(users, eq(orders.customerId, users.id));
 
   return ordersWithProductsAndUsers;
