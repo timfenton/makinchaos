@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { Active, DataRef, Over } from '@dnd-kit/core';
 import { ColumnDragData } from '@/app/admin/kanban/_components/board-column';
 import { TaskDragData } from '@/app/admin/kanban/_components/task-card';
-import { asc, count, desc, InferSelectModel, SQL } from 'drizzle-orm';
+import { asc, count, desc, InferSelectModel, SelectedFields, sql, SQL } from 'drizzle-orm';
 import db from './db/db';
 import { PgTableWithColumns, TableConfig } from 'drizzle-orm/pg-core';
 
@@ -66,7 +66,7 @@ export async function getItemsPaged<T extends TableConfig>(
   where?: SQL<unknown>,
   orderBy?: { column: keyof typeof table.$inferSelect, direction: typeof asc | typeof desc },
   page?: number,
-  limit?: number
+  limit?: number,
 ): Promise<PagedResponse<T>> {
   let totalItems = await db.select({ count: count() }).from(table);
 

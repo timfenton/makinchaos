@@ -5,9 +5,11 @@ import { relations } from 'drizzle-orm';
 import { orders } from './orders';
 
 export const statusEnum = pgEnum('status', ['active', 'inactive', 'archived']);
+export const roleEnum = pgEnum('role', ['admin', 'customer']);
 
 export const users = pgTable('users', {
   id: serial().primaryKey(),
+  roles: roleEnum().array().default(['customer']),
   facebookId: text().notNull().unique(),
   email: text().notNull(),
   firstName: text().notNull(),

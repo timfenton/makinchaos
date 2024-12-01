@@ -1,10 +1,11 @@
-import { integer, numeric, PgColumn, pgEnum, pgTable, PgTableWithColumns, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, numeric, pgEnum, pgTable, serial, timestamp } from 'drizzle-orm/pg-core';
 import db from '../db'
-import { count, ilike, eq, desc, asc, or, SQL } from 'drizzle-orm/sql';
+import { eq, asc, SQL } from 'drizzle-orm/sql';
 import { users } from './users';
-import { OrderByOperators, getTableColumns, ColumnsWithTable, relations } from 'drizzle-orm';
+import { relations, TableConfig } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
 import { getItemsPaged, OrderBy, PagedResponse } from '@/lib/utils';
+import { products } from './products';
 
 export const statusEnum = pgEnum('status', ['placed', 'in_progress', 'shipped', 'completed']);
 export const paidEnum = pgEnum('paid', ['paid', 'not_paid', 'needs_price']);
@@ -33,12 +34,23 @@ export async function getOrdersForCustomer(customerId: number) {
   return await getItemsPaged(orders, eq(orders.customerId, customerId), { column: 'submitted', direction: asc});
 }
 
+export async function getOrdersWithProducts() {
+  const ordersWithProductsAndUsers = await db
+    .select()
+    .from(orders)
+    .leftJoin(productsToOrders, eq(productsToOrders.orderId, orders.id)) // Join productsToOrders
+    .leftJoin(products, eq(products.id, productsToOrders.productId)) // Join products table
+    .leftJoin(users, eq(orders.customerId, users.id));
+
+  return ordersWithProductsAndUsers;
+}
+
 export async function getOrders(
   where?: SQL<unknown>,
   orderBy?: OrderBy<SelectOrders>,
   page?: number,
   limit?: number,
-): Promise<PagedResponse<SelectOrders>> {
+): Promise<PagedResponse<TableConfig>> {
   const productResult = await getItemsPaged(orders, where, orderBy, page, limit);
 
   return productResult;

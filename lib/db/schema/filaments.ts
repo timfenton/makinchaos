@@ -1,6 +1,6 @@
-import { pgEnum, pgTable, serial, text, boolean } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, serial, text, boolean, integer } from "drizzle-orm/pg-core";
 import db from "../db";
-import { eq, relations } from "drizzle-orm";
+import { eq, relations, sql } from "drizzle-orm";
 import { filamentsToProducts } from "./filamentsToProducts";
 
 export const filamentCategories = pgEnum('filament_categories', ['glitter', 'silk', 'tri_color', 'duo_color', 'shimmer', 'solid', 'rainbows'])
@@ -11,6 +11,8 @@ export const filaments = pgTable('filaments', {
   name: text().notNull(),
   description: text().notNull(),
   imageUrl: text().notNull(),
+  buyUrl: text(),
+  stock: integer().notNull().default(1),
   tags: text().array(),
   category: filamentCategories().notNull()
 });
@@ -26,6 +28,16 @@ export async function getFilaments() {
     return await db
     .select()
     .from(filaments)
+}
+
+export async function incrementFilamentStock(id: number, amount: number)
+{
+    return await db
+        .update(filaments)
+        .set({
+            stock: sql`GREATEST(${filaments.stock} + ${amount}, 0)`,
+        })
+        .where(eq(filaments.id, id))
 }
 
 export async function insertFilament(filament: NewFilament) {

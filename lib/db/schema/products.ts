@@ -1,10 +1,11 @@
 import { numeric, pgEnum, pgTable, serial, text } from 'drizzle-orm/pg-core';
 import db from '../db'
 import { count, ilike, eq, or } from 'drizzle-orm/sql';
-import { relations } from 'drizzle-orm';
+import { relations, TableConfig } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
 import { filamentsToProducts } from './filamentsToProducts';
 import { fontsToProducts } from './fontsToProducts';
+import { getItemsPaged, PagedResponse } from '@/lib/utils';
 
 export const statusEnum = pgEnum('status', ['new_order', 'in_progress', 'awaiting_shipment', 'shipped', 'completed']);
 
@@ -30,37 +31,11 @@ export async function getProducts(
   search: string,
   page?: number,
   limit?: number
-): Promise<{
-  products: SelectProduct[];
-  nextPage: number | null;
-  totalPages: number;
-  totalProducts: number;
-}> {
-  let totalProducts = await db.select({ count: count() }).from(products);
+): Promise<PagedResponse<TableConfig>> {
 
-  const currentPage = page ?? 1;
-  const currentPageIndex = currentPage - 1;
-  const resultLimit = (limit || 1000);
+  const productResult = await getItemsPaged(products, ilike(products.description, `%${search}%`), undefined, page, limit);
 
-  const offset = (currentPageIndex * resultLimit);
-  const nextPage = totalProducts[0].count > (currentPage * resultLimit) ? currentPage + 1 : null;
-
-  const productResult = search ? 
-    await db
-      .select()
-      .from(products)
-      .where(or(ilike(products.description, `%${search}%`)))
-      .offset(offset)
-      .limit(resultLimit) 
-    : 
-    await db.select().from(products).limit(resultLimit).offset(offset);
-
-  return {
-    products: productResult,
-    nextPage: nextPage,
-    totalPages: Math.ceil(totalProducts[0].count / resultLimit),
-    totalProducts: totalProducts[0].count
-  };
+  return productResult;
 }
 
 export async function updateProduct( id: number, product: Omit<Partial<NewProduct>, 'id'>){
