@@ -12,8 +12,6 @@ export const users = pgTable('user', {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  firstName: text().notNull(),
-  lastName: text().notNull(),
   name: text("name"),
   roles: roleEnum().array().default(['customer']),
   facebookId: text().notNull().unique(),
@@ -65,7 +63,7 @@ export async function getUsers(
     await db
       .select()
       .from(users)
-      .where(or(ilike(users.email, `%${search}%`), ilike(users.firstName, `%${search}%`), ilike(users.lastName, `%${search}%`)))
+      .where(or(ilike(users.email, `%${search}%`), ilike(users.name, `%${search}%`)))
       .offset(offset)
       .limit(resultLimit) 
     : 
