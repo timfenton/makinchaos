@@ -1,13 +1,10 @@
 import NextAuth, { DefaultSession } from 'next-auth';
 
 declare module 'next-auth' {
-  type UserSession = DefaultSession['user'];
-  interface Session {
-    user: UserSession;
+  export interface User{
+    facebookId?: string;
   }
-
-  interface CredentialsInputs {
-    email: string;
-    password: string;
-  }
+  export interface Session {
+    user: User & DefaultSession
+  } 
 }

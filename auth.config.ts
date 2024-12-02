@@ -18,8 +18,11 @@ const authConfig = {
     accountsTable: accounts,
     sessionsTable: sessions,
   }),
+  session: {
+    strategy: 'database'
+  },
   callbacks: {
-    jwt({token, user, account, profile, trigger, session}) {
+    async jwt({token, user, account, profile, trigger, session}) {
       console.log('the token is', token);
       console.log('the user is', user);
       console.log('the account is', account);
@@ -28,17 +31,18 @@ const authConfig = {
       console.log('the session is', session);
       return token;
     },
-    session({session, user, token, trigger}){
+    async session({session, user, token, trigger}){
       console.log('the token is', token);
       console.log('the user is', user);
       console.log('the trigger is', trigger);
       console.log('the session is', session);
       return session;
     },
-    signIn({ user, account, profile }){
+    async signIn({ user, account, profile }){
       console.log('the user is', user);
       console.log('the account is', account);
       console.log('the profile is', profile);
+      user.facebookId = account?.providerAccountId;
       return true;
     }
   },

@@ -1,25 +1,23 @@
-'use client';
-
-import { useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
 
 export default function FacebookSignInButton() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
-
   return (
+    <form
+      action={async () => {
+        "use server"
+        await signIn("facebook")
+      }}
+    >
     <Button
       className="w-full"
       variant="outline"
-      type="button"
-      onClick={() =>
-        signIn('facebook', { callbackUrl: callbackUrl ?? '/admin' })
-      }
+      type="submit"
     >
-      <Icons.gitHub className="mr-2 h-4 w-4" />
+      <Icons.facebook fill='#000' strokeOpacity={0} className="mr-2 h-4 w-4" />
       Continue with Facebook
     </Button>
+    </form>
   );
 }

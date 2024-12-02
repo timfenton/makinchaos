@@ -136,13 +136,14 @@ export function PostgresDrizzleAdapter(
 
   return {
     async createUser(data: any) {
-        console.log('going to try to create user with ', data);
       const { id, ...insertData } = data
       const hasDefaultId = getTableColumns(usersTable)["id"]["hasDefault"]
 
+      const valueData = hasDefaultId ? insertData : { ...insertData, id };
+
       return client
         .insert(usersTable)
-        .values(hasDefaultId ? insertData : { ...insertData, id })
+        .values(valueData)
         .returning()
         .then((res) => res[0]) as Awaitable<AdapterUser>
     },
