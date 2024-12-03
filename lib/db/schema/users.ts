@@ -4,16 +4,22 @@ import { count, ilike, eq, or } from 'drizzle-orm/sql';
 import { relations } from 'drizzle-orm';
 import { orders } from './orders';
 import { UUID } from 'crypto';
+import { enumToPgEnum } from '@/lib/utils';
+
+export enum Role {
+  ADMIN = 'admin',
+  CUSTOMER = 'customer',
+}
 
 export const statusEnum = pgEnum('status', ['active', 'inactive', 'archived']);
-export const roleEnum = pgEnum('role', ['admin', 'customer']);
+export const roleEnum = pgEnum('role', enumToPgEnum(Role));
 
 export const users = pgTable('user', {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
-  roles: roleEnum().array().default(['customer']),
+  roles: roleEnum().array().default([Role.ADMIN]),
   facebookId: text().notNull().unique(),
   email: text().notNull().unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),

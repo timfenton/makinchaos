@@ -7,7 +7,7 @@ import { searchParamsCache, serialize } from '@/lib/searchparams';
 import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { SearchParams } from 'nuqs/parsers';
+import { SearchParams } from 'nuqs';
 import { Suspense } from 'react';
 import ProductListingPage from './_components/product-listing';
 import ProductTableAction from './_components/product-tables/product-table-action';
@@ -17,15 +17,15 @@ export const metadata = {
 };
 
 type pageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 
 export default async function Page({ searchParams }: pageProps) {
   // Allow nested RSCs to access the search params (in a type-safe way)
-  searchParamsCache.parse(searchParams);
+  await searchParamsCache.parse(searchParams);
 
   // This key is used for invoke suspense if any of the search params changed (used for filters).
-  const key = serialize({ ...searchParams });
+  const key = serialize({ ...(await searchParams) });
 
   return (
     <PageContainer>

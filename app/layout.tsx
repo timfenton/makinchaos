@@ -3,6 +3,7 @@ import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 
@@ -33,7 +34,7 @@ export default async function RootLayout({
         <NextTopLoader showSpinner={false} />
         <Providers session={session}>
           <Toaster />
-          {children}
+            {children}
         </Providers>
       </body>
     </html>

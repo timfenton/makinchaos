@@ -4,14 +4,23 @@
 
 import NextAuth from 'next-auth';
 import authConfig from './auth.config';
+import { Role } from './lib/db/schema/users';
+import { NextResponse } from 'next/server';
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  if (!req.auth) {
-    const url = req.url.replace(req.nextUrl.pathname, '/signin');
-    return Response.redirect(url);
+  if(req.nextUrl.pathname === '/' || req.nextUrl.pathname.startsWith('/admin'))
+  {
+    if (!req.auth) {
+      return NextResponse.redirect(new URL('/signin', req.url));
+    }
+    if(!req.auth.user.roles?.includes(Role.ADMIN) && req.nextUrl.pathname.startsWith('/admin'))
+    {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
   }
+  return NextResponse.next();
 });
 
-export const config = { matcher: ['/'] };
+export const config = { matcher: '/:path*', };

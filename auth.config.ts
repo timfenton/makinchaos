@@ -23,25 +23,13 @@ const authConfig = {
   },
   callbacks: {
     async jwt({token, user, account, profile, trigger, session}) {
-      console.log('the token is', token);
-      console.log('the user is', user);
-      console.log('the account is', account);
-      console.log('the profile is', profile);
-      console.log('the trigger is', trigger);
-      console.log('the session is', session);
       return token;
     },
-    async session({session, user, token, trigger}){
-      console.log('the token is', token);
-      console.log('the user is', user);
-      console.log('the trigger is', trigger);
-      console.log('the session is', session);
+    async session({session, user}){
+      session.user.roles = user.roles;
       return session;
     },
     async signIn({ user, account, profile }){
-      console.log('the user is', user);
-      console.log('the account is', account);
-      console.log('the profile is', profile);
       user.facebookId = account?.providerAccountId;
       return true;
     }

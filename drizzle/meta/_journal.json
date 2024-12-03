@@ -15,6 +15,20 @@
       "when": 1733086143522,
       "tag": "0001_wide_susan_delgado",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1733189621811,
+      "tag": "0002_minor_catseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1733189879889,
+      "tag": "0003_brainy_king_cobra",
+      "breakpoints": true
     }
   ]
 }

@@ -4,19 +4,20 @@ import Header from '@/components/layout/header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export const metadata: Metadata = {
   title: 'Next Shadcn Dashboard Starter',
   description: 'Basic dashboard with Next.js and Shadcn'
 };
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
   // Persisting the sidebar state in the cookie.
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
   return (
     <KBar>
@@ -25,7 +26,9 @@ export default function DashboardLayout({
         <SidebarInset>
           <Header />
           {/* page main content */}
-          {children}
+            <NuqsAdapter>
+              {children}
+            </NuqsAdapter>
           {/* page main content ends */}
         </SidebarInset>
       </SidebarProvider>

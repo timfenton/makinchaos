@@ -1,19 +1,12 @@
 import type { ActionId, ActionImpl } from 'kbar';
 import * as React from 'react';
 
-const ResultItem = React.forwardRef(
-  (
-    {
-      action,
-      active,
-      currentRootActionId
-    }: {
-      action: ActionImpl;
-      active: boolean;
-      currentRootActionId: ActionId;
-    },
-    ref: React.Ref<HTMLDivElement>
-  ) => {
+const ResultItem = React.forwardRef<HTMLDivElement, {
+  action: ActionImpl;
+  active: boolean;
+  currentRootActionId: ActionId;
+}>(
+  ({ action, active, currentRootActionId }, ref) => {
     const ancestors = React.useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
@@ -24,7 +17,7 @@ const ResultItem = React.forwardRef(
 
     return (
       <div
-        ref={ref}
+        ref={ref} // ref is passed down directly here
         className={`relative z-10 flex cursor-pointer items-center justify-between px-4 py-3`}
       >
         {active && (
@@ -58,7 +51,7 @@ const ResultItem = React.forwardRef(
             {action.shortcut.map((sc, i) => (
               <kbd
                 key={sc + i}
-                className="flex items-center gap-1 rounded-md border px-1.5 py-1 text-xs font-medium  shadow"
+                className="flex items-center gap-1 rounded-md border px-1.5 py-1 text-xs font-medium shadow"
               >
                 {sc}
               </kbd>

@@ -6,6 +6,9 @@ import { TaskDragData } from '@/app/admin/kanban/_components/task-card';
 import { asc, count, desc, InferSelectModel, SelectedFields, sql, SQL } from 'drizzle-orm';
 import db from './db/db';
 import { PgTableWithColumns, TableConfig } from 'drizzle-orm/pg-core';
+import { User } from 'next-auth';
+import { Role } from './db/schema/users';
+import { NextResponse } from 'next/server';
 
 type DraggableData = ColumnDragData | TaskDragData;
 
@@ -105,4 +108,18 @@ export async function getItemsPaged<T extends TableConfig>(
     totalPages: Math.ceil(totalItems[0].count / resultLimit),
     totalItems: totalItems[0].count
   };
+}
+
+export function enumToPgEnum<T extends Record<string, any>>(
+  myEnum: T,
+): [T[keyof T], ...T[keyof T][]] {
+  return Object.values(myEnum).map((value: any) => `${value}`) as any
+}
+
+export function redirectToUserDefaultPage( user: User )
+{
+  if(user.roles?.includes(Role.ADMIN))
+    return '/admin/overview';
+  else 
+    return '/';
 }
