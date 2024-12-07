@@ -1,32 +1,28 @@
 'use client';
 
 import { DataTable } from '@/components/ui/table/data-table';
-import { DataTableFilterBox } from '@/components/ui/table/data-table-filter-box';
 import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
-import { Employee } from '@/constants/data';
 import { columns } from './columns';
 import {
-  GENDER_OPTIONS,
-  useEmployeeTableFilters
-} from './use-employee-table-filters';
+  useUserTableFilters
+} from './use-user-table-filters';
+import { SelectUser } from '@/lib/db/schema/users';
 
-export default function EmployeeTable({
+export default function UserTable({
   data,
   totalData
 }: {
-  data: Employee[];
+  data: SelectUser[];
   totalData: number;
 }) {
   const {
-    genderFilter,
-    setGenderFilter,
     isAnyFilterActive,
     resetFilters,
     searchQuery,
     setPage,
     setSearchQuery
-  } = useEmployeeTableFilters();
+  } = useUserTableFilters();
 
   return (
     <div className="space-y-4">
@@ -36,13 +32,6 @@ export default function EmployeeTable({
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           setPage={setPage}
-        />
-        <DataTableFilterBox
-          filterKey="gender"
-          title="Gender"
-          options={GENDER_OPTIONS}
-          setFilterValue={setGenderFilter}
-          filterValue={genderFilter}
         />
         <DataTableResetFilter
           isFilterActive={isAnyFilterActive}

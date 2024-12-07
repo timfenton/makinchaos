@@ -11,6 +11,7 @@ const authConfig = {
     FacebookProvider({
       clientId: process.env.FACEBOOK_ID ?? '',
       clientSecret: process.env.FACEBOOK_SECRET ?? '',
+      authorization: { params: { scope: 'public_profile email'}}
     }),
   ],
   adapter: PostgresDrizzleAdapter(db, {
@@ -30,6 +31,8 @@ const authConfig = {
       return session;
     },
     async signIn({ user, account, profile }){
+      console.log('account', account);
+      console.log('profile', profile);
       user.facebookId = account?.providerAccountId;
       return true;
     }

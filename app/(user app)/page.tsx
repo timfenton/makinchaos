@@ -1,13 +1,12 @@
-import { SearchParams } from "nuqs/parsers";
+import ClaimYourChaos  from "@/components/forms/claim-your-chaos";
 
 export const metadata = {
-    title: 'Dashboard: Products'
-};
-  
-type pageProps = {
-    searchParams: SearchParams;
+    title: 'Claim your chaos'
 };
 
-export default async function Page({ searchParams }: pageProps) {
-
+export default async function Page() {
+    
+    return (
+        <ClaimYourChaos pageTitle="Claim your Chaos" initialData={null}  />
+    )
 }

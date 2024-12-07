@@ -47,7 +47,7 @@ export async function getUserByFbId(
 }
 
 export async function getUsers(
-  search: string,
+  search?: string,
   page?: number,
   limit?: number
 ): Promise<{
