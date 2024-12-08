@@ -4,17 +4,32 @@ import { eq, asc, SQL } from 'drizzle-orm/sql';
 import { users } from './users';
 import { relations, TableConfig } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
-import { getItemsPaged, OrderBy, PagedResponse } from '@/lib/utils';
+import { enumToPgEnum, getItemsPaged, OrderBy, PagedResponse } from '@/lib/utils';
 import { products } from './products';
 
-export const statusEnum = pgEnum('status', ['placed', 'in_progress', 'shipped', 'completed']);
-export const paidEnum = pgEnum('paid', ['paid', 'not_paid', 'needs_price']);
+export enum OrderStatus {
+  NEW = 'new_order',
+  IN_PROGRESS = 'in_progress',
+  AWAITING_SHIPMENT = 'awaiting_shipment',
+  GENERATED_TRACKING = 'generated_tracking',
+  SHIPPED = 'shipped',
+  COMPLETED = 'completed'
+}
+
+export enum OrderPaidStatus {
+  PAID = 'order_paid',
+  NOT_PAID = 'not_paid',
+  NEEDS_PRICE = 'needs_price'
+}
+
+export const orderStatusEnum = pgEnum('status', enumToPgEnum(OrderStatus));
+export const orderPaidStatus = pgEnum('paid', enumToPgEnum(OrderPaidStatus));
 
 export const orders = pgTable('orders', {
   id: serial().primaryKey(),
   customerId: integer().notNull(), 
-  status: statusEnum().notNull(),
-  orderPaid: paidEnum().notNull(),
+  status: orderStatusEnum().notNull(),
+  orderPaid: orderPaidStatus().notNull(),
   price: numeric({ precision: 10, scale: 2 }),
   submitted: timestamp().defaultNow()
 });

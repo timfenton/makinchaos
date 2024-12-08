@@ -1,17 +1,16 @@
-import { numeric, pgEnum, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { numeric, pgTable, serial, text } from 'drizzle-orm/pg-core';
 import db from '../db'
-import { count, ilike, eq, or } from 'drizzle-orm/sql';
+import { ilike, eq } from 'drizzle-orm/sql';
 import { relations, TableConfig } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
 import { filamentsToProducts } from './filamentsToProducts';
 import { fontsToProducts } from './fontsToProducts';
 import { getItemsPaged, PagedResponse } from '@/lib/utils';
-
-export const statusEnum = pgEnum('status', ['new_order', 'in_progress', 'awaiting_shipment', 'shipped', 'completed']);
+import { createInsertSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
 export const products = pgTable('products', {
   id: serial().primaryKey(),
-  status: statusEnum().notNull(),
   price: numeric({ precision: 10, scale: 2 }),
   description: text().notNull(),
   petsName: text(),
@@ -23,6 +22,10 @@ export const productsRelations = relations(products, ({many}) => ({
   fonts: many(fontsToProducts),
   orders: many(productsToOrders),
 }));
+
+export const createProductSchema = createInsertSchema(products).extend({
+  filamentId: z.number().int().optional().nullable(),
+});
 
 export type SelectProduct = typeof products.$inferSelect;
 export type NewProduct = typeof products.$inferInsert;

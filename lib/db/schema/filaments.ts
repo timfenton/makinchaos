@@ -2,8 +2,19 @@ import { pgEnum, pgTable, serial, text, boolean, integer } from "drizzle-orm/pg-
 import db from "../db";
 import { eq, relations, sql } from "drizzle-orm";
 import { filamentsToProducts } from "./filamentsToProducts";
+import { enumToPgEnum } from "@/lib/utils";
 
-export const filamentCategories = pgEnum('filament_categories', ['glitter', 'silk', 'tri_color', 'duo_color', 'shimmer', 'solid', 'rainbows'])
+export enum FilamentCategories {
+    GLITTER = 'glitter',
+    SILK = 'silk',
+    TRI_COLOR = 'tri_color',
+    DUO_COLOR = 'duo_color',
+    SHIMMER = 'shimmer',
+    SOLID = 'solid',
+    RAINBOW = 'rainbow'
+}
+
+export const filamentCategories = pgEnum('filament_categories', enumToPgEnum(FilamentCategories))
 
 export const filaments = pgTable('filaments', {
   id: serial().primaryKey(),

@@ -112,15 +112,20 @@ html, body {
 body {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
+  -webkit-background-size: 400% 400%; /* for Safari */
   animation: gradient 15s ease infinite;
+  -webkit-animation: gradient 15s ease infinite; /* for Safari */
 }
 
 .sparkle-text {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 300% 300%; /* Scale the gradient for smooth animation */
+  -webkit-background-size: 300% 300%; /* for Safari */
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient 3s ease infinite;
+  -webkit-animation: gradient 15s ease infinite; /* for Safari */
 }
 
 @keyframes gradient {

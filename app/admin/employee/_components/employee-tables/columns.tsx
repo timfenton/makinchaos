@@ -33,7 +33,7 @@ export const columns: ColumnDef<SelectUser>[] = [
     header: 'EMAIL'
   },
   {
-    accessorKey: 'facebookId',
+    accessorFn: ((row) => { return `https://www.facebook.com/profile?id=${row}` }),
     header: 'FACEBOOK MESSAGE'
   },
   {

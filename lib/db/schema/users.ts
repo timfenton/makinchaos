@@ -10,8 +10,13 @@ export enum Role {
   ADMIN = 'admin',
   CUSTOMER = 'customer',
 }
+export enum UserStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  ARCHIVED = 'archived',
+}
 
-export const statusEnum = pgEnum('status', ['active', 'inactive', 'archived']);
+export const statusEnum = pgEnum('status', enumToPgEnum(UserStatus));
 export const roleEnum = pgEnum('role', enumToPgEnum(Role));
 
 export const users = pgTable('user', {

@@ -1,6 +1,5 @@
-import ClaimYourChaos  from "@/components/forms/claim-your-chaos";
+import ClaimYourChaos  from "@/app/(user app)/_components/forms/claim-your-chaos";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from 'next/image'
 
 export const metadata = {
     title: 'Claim your chaos'
@@ -20,7 +19,7 @@ export default async function Page() {
                         </CardHeader>
                     </div>
                     <CardContent className='flex-row w-full'>
-                        <ClaimYourChaos pageTitle="Claim your Chaos" initialData={null} />
+                        <ClaimYourChaos />
                     </CardContent>
                 </Card>
             </div>
