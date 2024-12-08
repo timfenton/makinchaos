@@ -11,6 +11,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'api.slingacademy.com',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'gvrpvzs5kiqd2med.public.blob.vercel-storage.com',
+        port: ''
       }
     ]
   },

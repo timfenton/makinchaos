@@ -3,12 +3,11 @@ import { twMerge } from 'tailwind-merge';
 import { Active, DataRef, Over } from '@dnd-kit/core';
 import { ColumnDragData } from '@/app/admin/kanban/_components/board-column';
 import { TaskDragData } from '@/app/admin/kanban/_components/task-card';
-import { asc, count, desc, InferSelectModel, SelectedFields, sql, SQL } from 'drizzle-orm';
+import { asc, count, desc, InferSelectModel, SQL } from 'drizzle-orm';
 import db from './db/db';
 import { PgTableWithColumns, TableConfig } from 'drizzle-orm/pg-core';
 import { User } from 'next-auth';
 import { Role } from './db/schema/users';
-import { NextResponse } from 'next/server';
 
 type DraggableData = ColumnDragData | TaskDragData;
 

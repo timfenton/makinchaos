@@ -12,8 +12,8 @@ export default async function Page() {
             <div>
                 <Card className="flex flex-col mx-auto w-full items-start px-8 pb-8">
                     <div className="flex flex-col w-full items-center">
-                        <CardHeader className='border-b border-muted-foreground w-3/4 mb-10'>
-                            <CardTitle className="text-5xl text-center font-extrabold sparkle-text">
+                        <CardHeader className='border-b border-muted-foreground w-11/12 md:w-3/4 mb-10'>
+                            <CardTitle className="text-4xl text-center font-extrabold sparkle-text">
                                 {metadata.title}
                             </CardTitle>
                         </CardHeader>

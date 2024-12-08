@@ -46,7 +46,7 @@ export default function ClaimYourChaos() {
     const fetchFilaments = async () => {
       try {
         const data = await getFilaments(); 
-        setFilamentOptions(data); 
+        setFilamentOptions(data.data); 
         setLoading(false);
       } catch (err) {
         setError(err as Error); 
@@ -76,33 +76,7 @@ export default function ClaimYourChaos() {
     <>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <div className="space-y-6">
-              <FormItem className="w-full">
-                <FormLabel>Images</FormLabel>
-                <FormControl>
-                  <FileUploader
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    maxFiles={4}
-                    maxSize={4 * 1024 * 1024}
-                    // disabled={loading}
-                    // progresses={progresses}
-                    // pass the onUpload function here for direct upload
-                    // onUpload={uploadFiles}
-                    // disabled={isUploading}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </div>
-          )}
-        /> */}
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             control={form.control}
             name="description"
@@ -158,6 +132,41 @@ export default function ClaimYourChaos() {
               )}
             />
           }
+          <FormField
+            control={form.control}
+            name="size"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Size</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter size (ex. Large or 8x10)"
+                    {...field}
+                    value={field.value ?? ''}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="qty"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantity</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="1"
+                    placeholder="Enter how many of these you want"
+                    {...field}
+                    value={field.value ?? 1}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         <FormField
             control={form.control}
             name="price"
@@ -185,3 +194,29 @@ export default function ClaimYourChaos() {
     </>
   );
 }
+
+    {/* <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <div className="space-y-6">
+              <FormItem className="w-full">
+                <FormLabel>Images</FormLabel>
+                <FormControl>
+                  <FileUploader
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    maxFiles={4}
+                    maxSize={4 * 1024 * 1024}
+                    // disabled={loading}
+                    // progresses={progresses}
+                    // pass the onUpload function here for direct upload
+                    // onUpload={uploadFiles}
+                    // disabled={isUploading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </div>
+          )}
+        /> */}

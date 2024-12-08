@@ -1,8 +1,10 @@
 import { pgEnum, pgTable, serial, text, boolean, integer } from "drizzle-orm/pg-core";
 import db from "../db";
-import { eq, relations, sql } from "drizzle-orm";
+import { eq, relations, sql, inArray, ilike, SQL } from "drizzle-orm";
 import { filamentsToProducts } from "./filamentsToProducts";
 import { enumToPgEnum } from "@/lib/utils";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
 export enum FilamentCategories {
     GLITTER = 'glitter',
@@ -34,11 +36,73 @@ export const filamentsRelations = relations(filaments, ({many}) => ({
 
 export type SelectFilament = typeof filaments.$inferSelect;
 export type NewFilament = typeof filaments.$inferInsert;
+export const createFilamentSchema = createInsertSchema(filaments, {
+    tags: z.array(z.string()),
+});
 
-export async function getFilaments() {
-    return await db
+export interface FilamentFilters {
+    search?: string;
+    categories?: string;
+    tags?: string;
+}
+
+export async function getFilaments(filters?: FilamentFilters) {
+    
+    let categoryFilter: FilamentCategories[] | undefined = undefined;
+    let tagFilter: SQL<unknown>[] | undefined = undefined;
+    
+    if(filters)
+    {
+        categoryFilter = filters.categories && filters.categories !== ''
+            ? filters.categories
+                .split('.')
+                .filter((cat) => Object.values(FilamentCategories).includes(cat as FilamentCategories))
+                .map((cat) => cat as FilamentCategories) // Convert to enum type
+            : undefined;
+
+            if (filters.tags && filters.tags !== '') {
+                tagFilter = filters.tags.split('.').map((row) => sql`${row}`);
+            }
+    }
+
+    const query = db.select().from(filaments);
+
+    if(categoryFilter)
+        query.where(inArray(filaments.category, categoryFilter));
+
+    if(filters?.search)
+        query.where(ilike(filaments.name, `%${filters.search}%`));
+
+    if(tagFilter)
+        query.where(
+            sql`tags::text[] && ARRAY[${sql.join(tagFilter, ', ')}]::text[]`
+        );
+
+    const filamentData = await query;
+
+    return {
+        data: filamentData,
+        totalFilaments: filamentData.length,
+    }
+}
+
+export async function getFilamentById( id: string ) {
+    const filamentId = parseInt(id);
+
+    if(isNaN(filamentId)) return {
+        data: null,
+        found: false
+    }; 
+
+    const filamentData = await db
     .select()
     .from(filaments)
+    .where(eq(filaments.id, filamentId));
+
+    return {
+        data: filamentData.length > 0 ? filamentData[0] : null,
+        found: !!filamentData && filamentData.length > 0
+    }
 }
 
 export async function incrementFilamentStock(id: number, amount: number)

@@ -14,6 +14,8 @@ export const products = pgTable('products', {
   price: numeric({ precision: 10, scale: 2 }),
   description: text().notNull(),
   petsName: text(),
+  size: text(),
+  qty: numeric({precision: 10, scale: 0}),
   font: text(),
 });
 

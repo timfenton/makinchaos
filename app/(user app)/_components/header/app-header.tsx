@@ -58,8 +58,7 @@ const AppHeader: React.FC<{className: string}> = ({className}) => {
   return (
     <div className={className}>
       <NavigationMenu className="flex flex-row w-full">
-        <ChaosLogo className="px-10 py-4" size={50} />
-        test
+        <ChaosLogo className="px-4 md:px-10 py-1 md:py-4" size={50} />
         <NavigationMenuList className="gap-3 w-full items-end">
           <NavigationMenuItem>
             <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>

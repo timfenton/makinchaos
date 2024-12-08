@@ -31,8 +31,6 @@ const authConfig = {
       return session;
     },
     async signIn({ user, account, profile }){
-      console.log('account', account);
-      console.log('profile', profile);
       user.facebookId = account?.providerAccountId;
       return true;
     }
