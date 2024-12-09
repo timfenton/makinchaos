@@ -2,9 +2,14 @@
 import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
 import { CellAction } from './cell-action';
-import { SelectFilament } from '@/lib/db/schema/filaments';
+import { incrementFilamentStock, SelectFilament, updateFilament } from '@/lib/db/schema/filaments';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { searchParamsCache } from '@/lib/searchparams';
+import { Input } from '@/components/ui/input';
+import { useEffect, useState } from 'react';
+import StockAdjuster from '@/app/admin/filament/_components/filament-tables/stock-adjuster';
 
 export const columns: ColumnDef<SelectFilament>[] = [
   {
@@ -29,7 +34,8 @@ export const columns: ColumnDef<SelectFilament>[] = [
   },
   {
     accessorKey: 'stock',
-    header: 'STOCK'
+    header: 'STOCK',
+    cell: ({ row }) => <StockAdjuster row={row} /> 
   },
   {
     accessorFn: ((row) => {
@@ -39,7 +45,15 @@ export const columns: ColumnDef<SelectFilament>[] = [
   },
   {
     accessorKey: 'tags',
-    header: 'TAGS'
+    header: 'TAGS',
+    cell: ({ row }) => {
+      const tags = row.getValue('tags') as string[];
+      return (
+        <div className='flex flex-row gap-2'>
+          {tags.map((tag) => <Badge key={tag} className="px-2">{tag}</Badge>)}
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'buyUrl',

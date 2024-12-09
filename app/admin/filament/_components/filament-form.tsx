@@ -20,13 +20,15 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { createFilamentSchema, FilamentCategories, insertFilament, SelectFilament } from '@/lib/db/schema/filaments';
+import { createFilamentSchema, FilamentCategories, insertFilament, SelectFilament, updateFilament } from '@/lib/db/schema/filaments';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { uploadFiles } from '@/lib/actions/upload';
 import { useRouter } from 'next/navigation';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 
 export default function FilamentForm({
   initialData,
@@ -36,11 +38,12 @@ export default function FilamentForm({
   pageTitle: string;
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [continuousMode, setContinuousMode] = useState(false);
   const router = useRouter();
 
   const defaultValues = {
     name: initialData?.name || '',
-    category: initialData?.category || FilamentCategories.SOLID,
+    category: initialData?.category || FilamentCategories.GLITTER,
     buyUrl: initialData?.buyUrl || '',
     description: initialData?.description || '',
     imageUrl: initialData?.imageUrl || '',
@@ -55,13 +58,16 @@ export default function FilamentForm({
   });
 
   async function onSubmit(values: z.infer<typeof createFilamentSchema>) {
-    
-
     try {
-      const result = await insertFilament(values);
+      const result = initialData && initialData?.id ? await updateFilament(initialData?.id, values) : await insertFilament(values);
 
-      if(result)
-        router.push('/admin/filament');
+      if (result) {
+        const successMessage = `Successfully ${initialData ? `updated ${values.name}.` : `added ${values.name} to filaments.`}`;
+        toast.success(successMessage);
+        setTimeout(() => !continuousMode || initialData ? router.push('/admin/filament') : form.reset(defaultValues), 1000);
+      } else {
+        toast.error('Something went wrong while submitting the form!');
+      }
     } catch (e) {
       const error = e as Error;
       form.setError('root', { message: error.message, type: 'value' });
@@ -76,6 +82,17 @@ export default function FilamentForm({
         </CardTitle>
       </CardHeader>
       <CardContent>
+      <div className="flex justify-end justify-items-end items-end space-x-2 w-full">
+        <Checkbox id="continuous" 
+          checked={continuousMode}
+          onCheckedChange={(state: boolean) => setContinuousMode(state)} />
+        <label
+          htmlFor="continuous"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Continuous Mode
+        </label>
+      </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -103,8 +120,6 @@ export default function FilamentForm({
               </div>
             )}
           />
-
-
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <FormField
                 control={form.control}
@@ -126,6 +141,7 @@ export default function FilamentForm({
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select
+                      value={field.value}
                       onValueChange={(value) => field.onChange(value)}
                     >
                       <FormControl>
@@ -228,7 +244,7 @@ export default function FilamentForm({
                 </FormItem>
               )}
             />
-            <Button type="submit">Add Product</Button>
+            <Button type="submit">{!initialData ? "Add" : "Update"} Product</Button>
           </form>
         </Form>
       </CardContent>

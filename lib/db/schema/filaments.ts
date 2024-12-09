@@ -116,10 +116,12 @@ export async function incrementFilamentStock(id: number, amount: number)
 }
 
 export async function insertFilament(filament: NewFilament) {
-    return db.insert(filaments).values(filament);
+    const insertedFilament = await db.insert(filaments).values(filament);
+
+    return insertedFilament;
 }
 
-export async function updateFilament(id: number, filamentUpdates: Omit<Partial<NewFilament>,'id'>) {
+export async function updateFilament(id: number, filamentUpdates: Omit<Partial<NewFilament>,'id'>): Promise<SelectFilament[]> {
     const updatedFilament = await db
         .update(filaments)
         .set(filamentUpdates)
