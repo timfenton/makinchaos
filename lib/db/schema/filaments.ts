@@ -86,6 +86,18 @@ export async function getFilaments(filters?: FilamentFilters) {
     }
 }
 
+export async function getFilamentByName( name: string ) {
+    const filamentData = await db
+    .select()
+    .from(filaments)
+    .where(ilike(filaments.name, `%${name}%`));
+
+    return {
+        data: filamentData.length > 0 ? filamentData[0] : null,
+        found: !!filamentData && filamentData.length > 0
+    }
+}
+
 export async function getFilamentById( id: string ) {
     const filamentId = parseInt(id);
 

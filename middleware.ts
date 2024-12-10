@@ -20,6 +20,15 @@ export default auth((req) => {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
+
+  if (req.nextUrl.pathname.startsWith('/api/filament')) {
+    const apiKey = req.headers.get('X-API-KEY');
+
+    if (apiKey !== process.env.SIRI_SECRET) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
+
   return NextResponse.next();
 });
 
