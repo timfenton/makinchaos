@@ -1,8 +1,8 @@
 import { integer, numeric, pgEnum, pgTable, serial, timestamp } from 'drizzle-orm/pg-core';
 import db from '../db'
-import { eq, asc, SQL } from 'drizzle-orm/sql';
+import { eq, asc, SQL, desc } from 'drizzle-orm/sql';
 import { users } from './users';
-import { relations, TableConfig } from 'drizzle-orm';
+import { AnyColumn, relations, TableConfig } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
 import { enumToPgEnum, getItemsPaged, OrderBy, PagedResponse } from '@/lib/utils';
 import { products } from './products';
@@ -46,7 +46,7 @@ export type SelectOrders = typeof orders.$inferSelect;
 export type NewOrder = typeof orders.$inferInsert;
 
 export async function getOrdersForCustomer(customerId: number) {
-  return await getItemsPaged(orders, eq(orders.customerId, customerId), { column: 'submitted', direction: asc});
+  return await getItemsPaged(orders, eq(orders.customerId, customerId), { column: orders.submitted, direction: asc});
 }
 
 export async function getOrdersWithProducts() {
@@ -62,7 +62,7 @@ export async function getOrdersWithProducts() {
 
 export async function getOrders(
   where?: SQL<unknown>,
-  orderBy?: OrderBy<SelectOrders>,
+  orderBy?: {column: AnyColumn, direction: typeof asc | typeof desc},
   page?: number,
   limit?: number,
 ): Promise<PagedResponse<TableConfig>> {

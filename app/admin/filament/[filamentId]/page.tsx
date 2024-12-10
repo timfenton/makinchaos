@@ -7,7 +7,7 @@ export const metadata = {
   title: 'Dashboard : Filament View'
 };
 
-type PageProps = Promise<{ params: { filamentId: string } }>;
+type PageProps = { params: Promise<{ filamentId: string }> };
 
 export default async function Page({ params }: PageProps) {
   const searchParams = await params;

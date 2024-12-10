@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { Active, DataRef, Over } from '@dnd-kit/core';
 import { ColumnDragData } from '@/app/admin/kanban/_components/board-column';
 import { TaskDragData } from '@/app/admin/kanban/_components/task-card';
-import { asc, count, desc, InferSelectModel, SQL } from 'drizzle-orm';
+import { AnyColumn, asc, count, desc, InferSelectModel, SQL } from 'drizzle-orm';
 import db from './db/db';
 import { PgTableWithColumns, TableConfig } from 'drizzle-orm/pg-core';
 import { User } from 'next-auth';
@@ -66,7 +66,7 @@ export interface PagedResponse<T extends TableConfig> {
 export async function getItemsPaged<T extends TableConfig>(
   table: PgTableWithColumns<T>,
   where?: SQL<unknown>,
-  orderBy?: { column: keyof typeof table.$inferSelect, direction: typeof asc | typeof desc },
+  orderBy?: { column: AnyColumn, direction: typeof asc | typeof desc },
   page?: number,
   limit?: number,
 ): Promise<PagedResponse<T>> {
@@ -79,25 +79,15 @@ export async function getItemsPaged<T extends TableConfig>(
   const offset = (currentPageIndex * resultLimit);
   const nextPage = totalItems[0].count > (currentPage * resultLimit) ? currentPage + 1 : null;
 
-  let query;
+  let query = db
+    .select()
+    .from(table)
+    .offset(offset)
+    .limit(resultLimit)
+    .where(where ?? undefined);
 
   if(orderBy)
-  {
-    query = db
-      .select()
-      .from(table)
-      .offset(offset)
-      .limit(resultLimit)
-      .where(where ?? undefined)
-      .orderBy(orderBy.direction(table[orderBy.column]))
-  } else {
-    query = db
-      .select()
-      .from(table)
-      .offset(offset)
-      .limit(resultLimit)
-      .where(where ?? undefined)
-  }
+    query.orderBy(orderBy.direction(orderBy.column))
 
   const result = await query;
 
