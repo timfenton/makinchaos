@@ -60,7 +60,7 @@ export const columns: ColumnDef<SelectFilament>[] = [
     header: 'BUY URL',
     cell: ({ row }) => {
       return (
-        <Button asChild>
+        <Button asChild className='py-6 px-2 w-24'>
           <Link href={row.getValue('buyUrl')} target='_blank'>Buy Now</Link>
         </Button>
       );

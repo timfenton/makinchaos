@@ -92,7 +92,33 @@ export default function ClaimYourChaos() {
           />
           {filamentOptions && filamentOptions.length > 0 && <FormField
             control={form.control}
-            name="filamentId"
+            name="filamentIds"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Color (If Applicable)</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(value)}
+                >
+                  <SelectTrigger className='w-[280px]'>
+                    <SelectValue placeholder="Select color(s)" />
+                  </SelectTrigger>
+                  <SelectContent className='max-h-[300px]'>
+                    { filamentOptions.map((item) => {
+                      return <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
+                    }) }
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+                <p className='text-xs pt-2 italic font-extralight text-gray-500'>
+                  *Note: Usually only one color per product, unless otherwise mentioned
+                </p>
+              </FormItem>
+              )}
+            />
+          }
+          {fontOptions && fontOptions.length > 0 && <FormField
+            control={form.control}
+            name="fontIds"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Font (If Applicable)</FormLabel>
@@ -105,7 +131,7 @@ export default function ClaimYourChaos() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    { filamentOptions.map((item) => {
+                    { fontOptions.map((item) => {
                       return <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
                     }) }
                   </SelectContent>
@@ -114,23 +140,6 @@ export default function ClaimYourChaos() {
               </FormItem>
             )}
           />
-          }
-          {fontOptions && fontOptions.length > 0 && <FormField
-            control={form.control}
-            name="font"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  { fontOptions.map((item) => {
-                      return <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                    }) 
-                  }
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-              )}
-            />
           }
           <FormField
             control={form.control}

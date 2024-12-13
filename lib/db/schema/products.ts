@@ -16,7 +16,6 @@ export const products = pgTable('products', {
   petsName: text(),
   size: text(),
   qty: numeric({precision: 10, scale: 0}),
-  font: text(),
 });
 
 export const productsRelations = relations(products, ({many}) => ({
@@ -26,11 +25,14 @@ export const productsRelations = relations(products, ({many}) => ({
 }));
 
 export const createProductSchema = createInsertSchema(products).extend({
-  filamentId: z.number().int().optional().nullable(),
+  filamentIds: z.array(z.number().int()).optional().default([]),
+  fontIds: z.array(z.number().int()).optional().default([]),
 });
 
 export type SelectProduct = typeof products.$inferSelect;
 export type NewProduct = typeof products.$inferInsert;
+
+export type NewProductExtended = z.infer<typeof createProductSchema>;
 
 export async function getProducts(
   search: string,

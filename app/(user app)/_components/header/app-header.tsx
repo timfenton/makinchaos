@@ -15,6 +15,8 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import ChaosLogo from "../logo"
+import { UserNav } from "@/components/layout/user-nav"
+import ThemeToggle from "@/components/layout/ThemeToggle/theme-toggle"
  
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -56,9 +58,18 @@ const components: { title: string; href: string; description: string }[] = [
  
 const AppHeader: React.FC<{className: string}> = ({className}) => {
   return (
-    <div className={className}>
-      <NavigationMenu className="flex flex-row w-full">
-        <ChaosLogo className="px-4 md:px-10 py-1 md:py-4" size={50} />
+    <div className={cn(className, 'flex flex-row w-full')}>
+      <ChaosLogo className="px-4 md:px-10 py-1 md:py-4" size={50} />
+      <div className="w-full flex flex-row justify-end p-10 gap-6">
+          <ThemeToggle />
+          <UserNav />
+      </div>
+    </div>
+  )
+}
+
+{/* <NavigationMenu className="flex flex-row w-full">
+        
         <NavigationMenuList className="gap-3 w-full items-end">
           <NavigationMenuItem>
             <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
@@ -118,10 +129,7 @@ const AppHeader: React.FC<{className: string}> = ({className}) => {
             </Link>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
-    </div>
-  )
-}
+      </NavigationMenu> */}
  
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
