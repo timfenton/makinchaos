@@ -22,7 +22,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { createFilamentSchema, FilamentCategories, insertFilament, SelectFilament, updateFilament } from '@/lib/db/schema/filaments';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { uploadFiles } from '@/lib/actions/upload';
@@ -59,6 +59,8 @@ export default function FilamentForm({
 
   async function onSubmit(values: z.infer<typeof createFilamentSchema>) {
     try {
+      // eslint-disable-next-line no-console
+      if(initialData) console.log('going to update with ', values);
       const result = initialData && initialData?.id ? await updateFilament(initialData?.id, values) : await insertFilament(values);
 
       if (result) {

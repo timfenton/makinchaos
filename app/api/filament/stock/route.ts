@@ -1,4 +1,4 @@
-import { getFilamentById, getFilamentByName, incrementFilamentStock, updateFilament } from "@/lib/db/schema/filaments";
+import { getFilamentByName, incrementFilamentStock, updateFilament } from "@/lib/db/schema/filaments";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 

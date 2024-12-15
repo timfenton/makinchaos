@@ -68,7 +68,8 @@ export function FileUploader({
         : [createFileFromUrl(urls, 0)];
       setFiles(newFiles);
     }
-  }, [urls]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onDrop = React.useCallback(
     async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -88,12 +89,22 @@ export function FileUploader({
         })
       );
 
-      setFiles((prev) => [...prev, ...newFiles]);
+      setFiles((prev) => {
+        if (prev.length === 1 && !multiple) {
+          return newFiles;
+        }
+        return [...prev, ...newFiles];
+      });
 
       if (onUpload) {
         try {
           const uploadedUrls = await onUpload(newFiles);
-          setUrls((prevUrls) => [...(prevUrls || []), ...uploadedUrls]);
+          setUrls((prevUrls) => {
+            if (!multiple && prevUrls?.length === 1) {
+              return uploadedUrls;
+            }
+            return [...(prevUrls || []), ...uploadedUrls];
+          });
         } catch {
           toast.error('File upload failed');
         }
@@ -112,8 +123,18 @@ export function FileUploader({
     if (!urls) return;
 
     const updatedUrls = Array.isArray(urls) ? urls.filter((_, i) => i !== index) : urls;
+
+    console.log(`removed ${index} and the new urls are ${updatedUrls}`);
+
     setUrls(updatedUrls);
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+
+    setFiles((prev) => {
+      const updatedFiles = prev.filter((_, i) => i !== index)
+
+      console.log(`removed ${index} files and new files are ${updatedFiles}`)
+
+      return updatedFiles;
+    });
   };
 
   return (

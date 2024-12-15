@@ -4,7 +4,7 @@ import { eq, asc, SQL, desc } from 'drizzle-orm/sql';
 import { users } from './users';
 import { AnyColumn, relations, TableConfig } from 'drizzle-orm';
 import { productsToOrders } from './productsToOrders';
-import { enumToPgEnum, getItemsPaged, OrderBy, PagedResponse } from '@/lib/utils';
+import { enumToPgEnum, getItemsPaged, PagedResponse } from '@/lib/utils';
 import { products } from './products';
 
 export enum OrderStatus {

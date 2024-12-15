@@ -11,9 +11,14 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { Role } from '@/lib/db/schema/users';
 import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 export function UserNav() {
   const { data: session } = useSession();
+  const router = useRouter();
+
   if (session) {
     return (
       <DropdownMenu>
@@ -41,6 +46,12 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
+            {session.user.roles?.includes(Role.ADMIN) && (
+              <DropdownMenuItem onClick={() => router.push('/admin/overview')}>
+              Admin
+              <DropdownMenuShortcut>⇧⌘A</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            )}
             <DropdownMenuItem>
               Orders
               <DropdownMenuShortcut>⇧⌘O</DropdownMenuShortcut>

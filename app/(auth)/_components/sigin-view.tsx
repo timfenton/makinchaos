@@ -1,8 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import UserAuthForm from './user-auth-form';
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import ChaosLogo from '@/app/(user app)/_components/logo';
 
 export const metadata: Metadata = {
@@ -30,7 +28,7 @@ export default function SignInViewPage() {
                 Welcome to makinchaos.com! 
               </p>
               <p className="text-xl">
-                Here to claim your chaos or order custom chaos? You've come to the right place,
+                Here to claim your chaos or order custom chaos? You&apos;ve come to the right place,
                 just signin with Facebook and submit the form!
               </p>
               <footer className="text-sm">- Trina</footer>
