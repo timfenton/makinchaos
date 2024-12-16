@@ -59,8 +59,6 @@ export default function FilamentForm({
 
   async function onSubmit(values: z.infer<typeof createFilamentSchema>) {
     try {
-      // eslint-disable-next-line no-console
-      if(initialData) console.log('going to update with ', values);
       const result = initialData && initialData?.id ? await updateFilament(initialData?.id, values) : await insertFilament(values);
 
       if (result) {

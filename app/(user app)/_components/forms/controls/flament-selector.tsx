@@ -19,7 +19,6 @@ export default function FilamentSelector({ setFilamentSelection }: FilamentSelec
 
         if(selectedFilaments.includes(id))
         {
-            console.log('it includes it');
             const filtered = filamentsCopy.filter((x) => x !== id);
             setSelectedFilaments(filtered);
         } else {

@@ -16,6 +16,8 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { SortableFields } from '@/lib/db/schema/filaments';
+import { searchParams } from '@/lib/searchparams';
 import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon
@@ -29,7 +31,7 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { parseAsInteger, useQueryState } from 'nuqs';
+import { parseAsInteger, parseAsStringEnum, useQueryState } from 'nuqs';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -42,7 +44,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   totalItems,
-  pageSizeOptions = [10, 20, 30, 40, 50]
+  pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTableProps<TData, TValue>) {
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
@@ -54,6 +56,14 @@ export function DataTable<TData, TValue>({
       .withOptions({ shallow: false, history: 'push' })
       .withDefault(10)
   );
+  const [sort, setSort] = useQueryState(
+    'sort',
+    parseAsStringEnum(Object.values(SortableFields)),
+  )
+  const [sortDir, setSortDir] = useQueryState(
+    'dir',
+   parseAsStringEnum(['asc', 'desc']),
+  )
 
   const paginationState = {
     pageIndex: currentPage - 1, // zero-based index for React Table
@@ -76,6 +86,10 @@ export function DataTable<TData, TValue>({
     setPageSize(pagination.pageSize);
   };
 
+  const handleSortingChange = (row: any) => {
+   console.log('row', row);
+  }
+
   const table = useReactTable({
     data,
     columns,
@@ -83,10 +97,11 @@ export function DataTable<TData, TValue>({
     state: {
       pagination: paginationState
     },
+    onSortingChange: handleSortingChange,
     onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
+    manualPagination: false,
     manualFiltering: true
   });
 
@@ -97,7 +112,8 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map((header) => {
+                  return (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
@@ -106,7 +122,7 @@ export function DataTable<TData, TValue>({
                           header.getContext()
                         )}
                   </TableHead>
-                ))}
+                )})}
               </TableRow>
             ))}
           </TableHeader>

@@ -124,14 +124,10 @@ export function FileUploader({
 
     const updatedUrls = Array.isArray(urls) ? urls.filter((_, i) => i !== index) : urls;
 
-    console.log(`removed ${index} and the new urls are ${updatedUrls}`);
-
     setUrls(updatedUrls);
 
     setFiles((prev) => {
       const updatedFiles = prev.filter((_, i) => i !== index)
-
-      console.log(`removed ${index} files and new files are ${updatedFiles}`)
 
       return updatedFiles;
     });

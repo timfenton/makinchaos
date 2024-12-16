@@ -21,6 +21,7 @@ export const columns: ColumnDef<SelectFilament>[] = [
           <Image
             src={row.getValue('imageUrl')}
             alt={row.getValue('name')}
+            sizes='120px'
             fill
             className="rounded-lg"
           />
@@ -30,7 +31,8 @@ export const columns: ColumnDef<SelectFilament>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'NAME'
+    header: 'NAME',
+    enableSorting: true,
   },
   {
     accessorKey: 'stock',

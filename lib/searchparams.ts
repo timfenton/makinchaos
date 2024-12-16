@@ -2,15 +2,19 @@ import {
   createSearchParamsCache,
   createSerializer,
   parseAsInteger,
-  parseAsString
+  parseAsString,
+  parseAsStringEnum
 } from 'nuqs/server';
+import { SortableFields } from './db/schema/filaments';
 
 export const searchParams = {
   page: parseAsInteger.withDefault(1),
   limit: parseAsInteger.withDefault(10),
   q: parseAsString,
   categories: parseAsString,
-  tags: parseAsString
+  tags: parseAsString,
+  sort: parseAsStringEnum(Object.values(SortableFields)),
+  dir: parseAsStringEnum(['asc', 'desc']),
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParams);

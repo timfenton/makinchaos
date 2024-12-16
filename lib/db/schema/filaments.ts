@@ -1,6 +1,6 @@
 import { pgEnum, pgTable, serial, text, boolean, integer } from "drizzle-orm/pg-core";
 import db from "../db";
-import { eq, relations, sql, inArray, ilike, SQL } from "drizzle-orm";
+import { eq, relations, sql, inArray, ilike, SQL, desc, asc } from "drizzle-orm";
 import { filamentsToProducts } from "./filamentsToProducts";
 import { enumToPgEnum } from "@/lib/utils";
 import { createInsertSchema } from "drizzle-zod";
@@ -36,9 +36,22 @@ export const filamentsRelations = relations(filaments, ({many}) => ({
 
 export type SelectFilament = typeof filaments.$inferSelect;
 export type NewFilament = typeof filaments.$inferInsert;
+export enum SortableFields {
+    Name = 'name',
+}
+
+export const sortColumnsMapping: Record<string, any> = {
+    'name': filaments.name,
+}
+
 export const createFilamentSchema = createInsertSchema(filaments, {
     tags: z.array(z.string()),
 });
+
+export interface SortBy { 
+    column: SortableFields,
+    dir?: 'asc' | 'desc',
+}
 
 export interface FilamentFilters {
     search?: string;
@@ -46,7 +59,7 @@ export interface FilamentFilters {
     tags?: string;
 }
 
-export async function getFilaments(filters?: FilamentFilters) {
+export async function getFilaments(filters?: FilamentFilters, sortBy?: SortBy) {
     
     let categoryFilter: FilamentCategories[] | undefined = undefined;
     let tagFilter: SQL<unknown>[] | undefined = undefined;
@@ -77,6 +90,17 @@ export async function getFilaments(filters?: FilamentFilters) {
         query.where(
             sql`tags::text[] && ARRAY[${sql.join(tagFilter, ', ')}]::text[]`
         );
+
+    if(sortBy)
+    {
+        let sortDirection = asc;
+
+        if(sortBy.dir) sortDirection = sortBy.dir === 'asc' ? asc : desc;
+
+        query.orderBy(sortDirection(sortColumnsMapping[sortBy.column]))
+    } else {
+        query.orderBy(asc(filaments.name))
+    }
 
     const filamentData = await query;
 
