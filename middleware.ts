@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server';
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  if(req.nextUrl.pathname === '/' || req.nextUrl.pathname.startsWith('/admin'))
+  if(req.nextUrl.pathname.startsWith('/admin'))
   {
     if (!req.auth) {
       return NextResponse.redirect(new URL('/signin', req.url));

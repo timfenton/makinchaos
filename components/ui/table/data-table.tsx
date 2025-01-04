@@ -16,8 +16,6 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { SortableFields } from '@/lib/db/schema/filaments';
-import { searchParams } from '@/lib/searchparams';
 import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon
@@ -31,7 +29,7 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { parseAsInteger, parseAsStringEnum, useQueryState } from 'nuqs';
+import { parseAsInteger, useQueryState } from 'nuqs';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,14 +54,6 @@ export function DataTable<TData, TValue>({
       .withOptions({ shallow: false, history: 'push' })
       .withDefault(10)
   );
-  const [sort, setSort] = useQueryState(
-    'sort',
-    parseAsStringEnum(Object.values(SortableFields)),
-  )
-  const [sortDir, setSortDir] = useQueryState(
-    'dir',
-   parseAsStringEnum(['asc', 'desc']),
-  )
 
   const paginationState = {
     pageIndex: currentPage - 1, // zero-based index for React Table
@@ -86,10 +76,6 @@ export function DataTable<TData, TValue>({
     setPageSize(pagination.pageSize);
   };
 
-  const handleSortingChange = (row: any) => {
-   console.log('row', row);
-  }
-
   const table = useReactTable({
     data,
     columns,
@@ -97,7 +83,6 @@ export function DataTable<TData, TValue>({
     state: {
       pagination: paginationState
     },
-    onSortingChange: handleSortingChange,
     onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

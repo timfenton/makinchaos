@@ -11,7 +11,8 @@ export default async function Page() {
                             Available Colors
                         </CardTitle>
                         <CardDescription className="text-xl text-center">
-                            Currently available colors are listed below, click a color to copy the name!
+                            <span className="text-red-600">Please be aware</span> that 🌈 RAINBOW rolls work best on larger prints. 
+                            <br />On shorter prints, such as rock climbing holds or even ramps, you may only get 1-2 random colors from the rainbow roll.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="w-full p-0">

@@ -1,5 +1,7 @@
 import ClaimYourChaos  from "@/app/(user app)/_components/forms/claim-your-chaos";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable as OrderTable } from "@/components/ui/table/data-table";
+import OrderForm from "./_components/order-form";
 
 export const metadata = {
     title: 'Claim your chaos'
@@ -19,7 +21,7 @@ export default async function Page() {
                         </CardHeader>
                     </div>
                     <CardContent className='flex-row w-full'>
-                        <ClaimYourChaos />
+                            <OrderForm />
                     </CardContent>
                 </Card>
             </div>

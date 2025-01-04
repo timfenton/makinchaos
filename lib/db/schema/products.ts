@@ -1,4 +1,4 @@
-import { numeric, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { numeric, pgTable, serial, smallint, text } from 'drizzle-orm/pg-core';
 import db from '../db'
 import { ilike, eq } from 'drizzle-orm/sql';
 import { relations, TableConfig } from 'drizzle-orm';
@@ -13,9 +13,9 @@ export const products = pgTable('products', {
   id: serial().primaryKey(),
   price: numeric({ precision: 10, scale: 2 }),
   description: text().notNull(),
-  petsName: text(),
-  size: text(),
-  qty: numeric({precision: 10, scale: 0}),
+  petsName: text().notNull().default(''),
+  size: text().notNull().default(''),
+  qty: smallint().default(1)
 });
 
 export const productsRelations = relations(products, ({many}) => ({
@@ -24,7 +24,19 @@ export const productsRelations = relations(products, ({many}) => ({
   orders: many(productsToOrders),
 }));
 
+const priceSchema = z
+  .string()
+  .refine((value) => {
+    const isNumber = !isNaN(Number(value));
+    const hasLessThanTwoDecimal = value.toString().indexOf('.') === -1 || value.toString().split('.')[1]?.length <= 2;
+    return isNumber && hasLessThanTwoDecimal;
+  }, {
+    message: 'Please enter a valid price.',
+  }).optional();
+
 export const createProductSchema = createInsertSchema(products).extend({
+  price: priceSchema,
+  qty: z.number().int("Must be a whole number").min(1, "Must be at least 1").default(1).optional(),
   filamentIds: z.array(z.number().int()).optional().default([]),
   fontIds: z.array(z.number().int()).optional().default([]),
 });

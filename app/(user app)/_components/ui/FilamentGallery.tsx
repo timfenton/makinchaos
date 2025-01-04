@@ -2,22 +2,37 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { getFilaments, SelectFilament } from '@/lib/db/schema/filaments';
+import { FilamentCategories, getFilaments, SelectFilament, FilamentFilters } from '@/lib/db/schema/filaments';
 import { toast } from 'sonner';
+import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 const FilamentGallery = () => {
-    const [filaments, setFilaments] = React.useState<SelectFilament[] | undefined>(undefined);
+    const [filaments, setFilaments] = React.useState<SelectFilament[]>();
+    const [categoryFilter, setCategoryFilter] = React.useState<FilamentCategories>();
+    const [categoryFilterKey, setCategoryFilterKey] = React.useState(+new Date())
 
     React.useEffect(() => {
         async function grabFilaments () {
-            const response = await getFilaments();
+
+            const filter: FilamentFilters | undefined = categoryFilter ? {
+              categories: categoryFilter,
+            } : undefined;
+
+            const response = await getFilaments(filter);
     
             if(response.data)
                 setFilaments(response.data);
         }
 
         grabFilaments();
-    });
+    },[categoryFilter]);
+
+    const filamentCategorySelects = Object.entries(FilamentCategories).map(([v, k]) => {
+      console.log(k, v);
+      return (<SelectItem key={k} value={k}>{v.replace("_"," ")}</SelectItem>)
+    })
     
 
     const handleCopyToClipboard = (name: string) => {
@@ -31,7 +46,26 @@ const FilamentGallery = () => {
       };
 
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full">
+      <>
+      <div className='mb-10 flex flex-col space-y-5 z-50 max-w-md'>
+        <Label>
+          Filament Category Filter
+        </Label>
+        <div className='flex flex-row max-w-md space-x-4'>
+          <Select key={categoryFilterKey} value={categoryFilter} onValueChange={(value) => value ? setCategoryFilter(value as FilamentCategories) : undefined}>
+              <SelectTrigger className=''>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent onCloseAutoFocus={(e) => e.preventDefault()} position='popper'>
+                {filamentCategorySelects}
+              </SelectContent>
+          </Select>
+          <Button type='reset' variant={'outline'} onClick={() => {
+            setCategoryFilter(undefined); setCategoryFilterKey(+new Date)
+          }}>Reset</Button>
+        </div>
+      </div>
+      <div className="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full">
         {filaments && 
             filaments.map((filament) => (
           <div
@@ -58,6 +92,7 @@ const FilamentGallery = () => {
           </div>
         ))}
       </div>
+      </>
     );
   };
   
