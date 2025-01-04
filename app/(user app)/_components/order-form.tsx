@@ -104,7 +104,7 @@ const OrderForm = () => {
                   <p>Price: <span className="font-semibold">${product.price}</span></p>
                   <p>Quantity: <span className="font-semibold">{product.qty}</span></p>
                   <p>Size: <span className="font-semibold">{product.size}</span></p>
-                  <p>Pet's Name: <span className="font-semibold">{product.petsName}</span></p>
+                  <p>{"Pet's Name:"} <span className="font-semibold">{product.petsName}</span></p>
                   <p>Font: <span className="font-semibold">{fontOptions.find((font) => product.fontIds[0] === font.id)?.name ?? "N/A"}</span></p>
                   <p>Filament: <span className="font-semibold">{filamentOptions.find((filament) => product.filamentIds[0] === filament.id)?.name ?? "N/A"}</span></p>
                 </div>
@@ -195,7 +195,7 @@ const OrderForm = () => {
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col">
-                  <Label>Pet's Name</Label>
+                  <Label>{"Pet's Name"}</Label>
                   <Input
                     {...field}
                     className="p-2 border rounded-md"

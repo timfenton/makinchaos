@@ -53,7 +53,7 @@ const FilamentGallery = () => {
         </Label>
         <div className='flex flex-row max-w-md space-x-4'>
           <Select key={categoryFilterKey} value={categoryFilter} onValueChange={(value) => value ? setCategoryFilter(value as FilamentCategories) : undefined}>
-              <SelectTrigger className=''>
+              <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent onCloseAutoFocus={(e) => e.preventDefault()} position='popper'>
