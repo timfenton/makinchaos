@@ -1,7 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import FilamentGallery from "../_components/ui/FilamentGallery";
+import { getMaterialTypes } from "@/lib/db/schema/materialTypes";
 
 export default async function Page() {
+    const materialTypes = await getMaterialTypes();
+
     return (
         <>
             <div>
@@ -16,7 +19,7 @@ export default async function Page() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="w-full p-0">
-                        <FilamentGallery />
+                        <FilamentGallery materialTypes={materialTypes} />
                     </CardContent>
                 </Card>
             </div>

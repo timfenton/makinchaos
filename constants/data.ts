@@ -139,17 +139,17 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
-    title: 'Filaments',
-    url: '/admin/filament',
-    icon: 'filament',
+    title: 'Materials',
+    url: '/admin/material',
+    icon: 'materials',
     shortcut: ['f', 'f'],
     isActive: false,
     items: [] // No child items
   },
   {
-    title: 'Product',
-    url: '/admin/product',
-    icon: 'product',
+    title: 'Material Types',
+    url: '/admin/material-types',
+    icon: 'materialTypes',
     shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items

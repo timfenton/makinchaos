@@ -1,10 +1,10 @@
 import { pgTable, serial, text, boolean, integer } from "drizzle-orm/pg-core";
 import db from "../db";
-import { eq, relations, sql, ilike, SQL, desc, asc } from "drizzle-orm";
+import { eq, relations, sql, ilike, SQL, desc, asc, inArray, and } from "drizzle-orm";
 import { materialsToProducts } from "./materialsToProducts";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { materialTypes } from "./materialTypes";
+import { MaterialType, materialTypes } from "./materialTypes";
 
 export const materials = pgTable('materials', {
   id: serial().primaryKey(),
@@ -48,46 +48,89 @@ export interface SortBy {
 
 export interface MaterialFilters {
     search?: string;
-    materialType?: number;
+    materialType?: string;
     categories?: string;
     tags?: string;
 }
 
-export async function getMaterials(filters?: MaterialFilters, sortBy?: SortBy) {
-    
-    let categoryFilter: SQL<unknown>[] | undefined = undefined;
-    let tagFilter: SQL<unknown>[] | undefined = undefined;
+export interface MaterialWithTypes {
+    materials: SelectMaterial,
+    material_types: MaterialType | null,
+}
+
+export async function getMaterials(filters?: MaterialFilters, sortBy?: SortBy, includeInActive = false) {
+    const whereConditions: SQL[] = [];
+
+    let categoryFilter: string[] | undefined = undefined;
+    let tagFilter: string[] | undefined = undefined;
+    let materialFilter: number[] | undefined = undefined;
     
     if(filters)
     {
         categoryFilter = filters.categories && filters.categories !== ''
             ? filters.categories
-                .split('.').map((row) => sql`${row}`)
+                .split('.')
             : undefined;
 
         tagFilter = filters.tags && filters.tags !== ''
-                ? filters.tags
-                    .split('.').map((row) => sql`${row}`)
-                : undefined;
+            ? filters.tags
+                .split('.')
+            : undefined;
+
+        materialFilter = filters.materialType && filters.materialType !== '' 
+            ? filters.materialType
+            .split('.')
+            .flatMap((type) => {
+                const num = Number(type);
+                return isNaN(num) ? [] : num;
+            })
+            : undefined;
     }
 
     const query = db.select().from(materials).leftJoin(materialTypes, eq(materials.materialTypeId, materialTypes.id));
 
     if(categoryFilter)
-        query.where(
-            sql`categories::text[] && ARRAY[${sql.join(categoryFilter, ', ')}]::text[]`
+    {
+        const categoryArray = sql`ARRAY[${categoryFilter.reduce(
+            (acc, item, index) => acc.append(sql`${item}${index < categoryFilter.length - 1 ? sql`, ` : sql``}`),
+            sql``
+        )}]::text[]`;
+
+        whereConditions.push(
+            sql`${materials.id} IN (
+            SELECT ${materials.id}
+            FROM ${materials},
+            unnest(${materials.categories}) AS category
+            WHERE ${categoryArray} <@ ${materials.categories}
+            )`
         );
+    }
 
     if(filters?.search)
-        query.where(ilike(materials.name, `%${filters.search}%`));
+        whereConditions.push(ilike(materials.name, `%${filters.search}%`));
 
     if(tagFilter)
-        query.where(
-            sql`tags::text[] && ARRAY[${sql.join(tagFilter, ', ')}]::text[]`
-        );
+    {
+        const tagArray = sql`ARRAY[${tagFilter.reduce(
+            (acc, item, index) => acc.append(sql`${item}${index < tagFilter.length - 1 ? sql`, ` : sql``}`),
+            sql``
+        )}]::text[]`;
 
-    if(filters?.materialType)
-        query.where(eq(materialTypes.id, filters.materialType))
+        whereConditions.push(
+            sql`${materials.id} IN (
+            SELECT ${materials.id}
+            FROM ${materials},
+            unnest(${materials.tags}) AS category
+            WHERE ${tagArray} <@ ${materials.tags}
+            )`
+        );
+    }
+
+    if(materialFilter)
+        whereConditions.push(inArray(materials.materialTypeId, materialFilter))
+
+    if(!includeInActive)
+        whereConditions.push(eq(materials.isActive, true));
 
     if(sortBy)
     {
@@ -99,6 +142,9 @@ export async function getMaterials(filters?: MaterialFilters, sortBy?: SortBy) {
     } else {
         query.orderBy(asc(materials.name))
     }
+
+    if(whereConditions.length > 0)
+        query.where(and(...whereConditions));
 
     const materialData = await query;
 
@@ -161,6 +207,8 @@ export async function updateMaterial(id: number, materialUpdates: Omit<Partial<N
         .set(materialUpdates)
         .where(eq(materials.id, id))
         .returning();
+
+    console.log('updatedMaterial', updatedMaterial);
 
     return updatedMaterial;
 }

@@ -100,10 +100,16 @@ export function FileUploader({
         try {
           const uploadedUrls = await onUpload(newFiles);
           setUrls((prevUrls) => {
-            if (!multiple && prevUrls?.length === 1) {
+            if (typeof uploadedUrls === 'string') {
               return uploadedUrls;
             }
-            return [...(prevUrls || []), ...uploadedUrls];
+            
+            if (!multiple && prevUrls?.length === 1) {
+              return uploadedUrls[0];
+            }
+
+            const combined = [...(prevUrls || []), ...uploadedUrls];
+            return combined;
           });
         } catch {
           toast.error('File upload failed');
@@ -148,7 +154,7 @@ export function FileUploader({
             {...getRootProps()}
             className={cn(
               'group relative grid h-52 w-full cursor-pointer place-items-center rounded-lg border-2 border-dashed border-muted-foreground/25 px-5 py-2.5 text-center transition hover:bg-muted/25',
-              isDragActive && 'border-muted-foreground/50',
+              isDragActive && 'border-primary',
               disabled && 'pointer-events-none opacity-60',
               className
             )}
@@ -169,7 +175,7 @@ export function FileUploader({
               <FileCard
                 key={index}
                 file={file}
-                url={urls?.[index]}
+                url={typeof urls ==='string' ? urls : urls?.[index]}
                 onRemove={() => onRemove(index)}
                 progress={progresses?.[file.name]}
               />
@@ -215,7 +221,7 @@ function FileCard({ file, url, progress, onRemove }: FileCardProps) {
         )}
         <div className="flex w-full flex-col gap-2">
           <p className="line-clamp-1 text-sm font-medium text-foreground/80">
-            {url || file.name}
+            {file.name || url}
           </p>
           <p className="text-xs text-muted-foreground">
             {formatBytes(file.size)}

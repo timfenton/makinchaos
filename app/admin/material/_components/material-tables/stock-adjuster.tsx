@@ -2,30 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useDebounce } from 'react-use';
-import { toast } from "sonner";
+import { updateFilament } from "@/lib/db/schema/filaments";
+import { useState, useEffect } from "react";
 
-interface StockAdjusterProps {
-  row: { original: { id: number, name: string, stock: number } },
-  onStockChange: (id:number, stock: number) => Promise<void>,
-}
-
-export default function StockAdjuster ({ row, onStockChange}: StockAdjusterProps) {
-      const { id, name }= row.original;
+export default function StockAdjuster ({row}: {row: { original: { id: number, stock: number }}}) {
+    const id = row.original.id;
 
       const [stockState, setStockState] = useState<number>(row.original.stock);
-
-      const firstLoad = useRef(true);
-      
-      const [isReady, cancel] = useDebounce(async () => {
-        if(firstLoad.current) {
-          firstLoad.current = false;
-          return;
-        }
-        await onStockChange(id, stockState);
-        toast.success(`Finished updating stock for ${name} to ${stockState}`);
-      }, 500, [stockState]);
 
       useEffect(() => {
         setStockState(row.original.stock);
@@ -33,11 +16,13 @@ export default function StockAdjuster ({ row, onStockChange}: StockAdjusterProps
 
       const handleIncrement = async (amount: number) => {
         setStockState(prev => prev + amount);
+        await updateFilament(id, { stock: stockState + amount });
       };
 
       const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = Number(e.target.value);
         setStockState(newValue);
+        await updateFilament(id, { stock: newValue });
       };
 
       return (
