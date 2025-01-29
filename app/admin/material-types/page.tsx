@@ -1,7 +1,5 @@
 import PageContainer from '@/components/layout/page-container';
-import { getMaterialTypes, MaterialType } from '@/lib/db/schema/materialTypes';
-import { Suspense } from 'react';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
+import { getMaterialTypes } from '@/lib/db/schema/materialTypes';
 import MaterialListing from './_components/material-types-listing';
 
 export const metadata = {

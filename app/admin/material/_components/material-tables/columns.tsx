@@ -5,13 +5,12 @@ import { updateMaterial } from '@/lib/db/schema/materials';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useCallback, useState } from 'react';
 import StockAdjuster from '@/app/admin/filament/_components/filament-tables/stock-adjuster';
 import { SelectMaterial } from '@/lib/db/schema/materials';
 import { MaterialType } from '@/lib/db/schema/materialTypes';
 import ExpandableImage from '@/components/ui/expandable-image';
-import { AlertModal } from '@/components/modal/alert-modal';
 import { toast } from 'sonner';
+import ActiveAction from './activeAction';
 
 interface GetColumnsProps {
   updateItemAction: (row: SelectMaterial) => void;
@@ -20,28 +19,23 @@ interface GetColumnsProps {
 }
 
 export const getColumns = ({ updateItemAction, triggerRefresh, materialTypes }: GetColumnsProps): ColumnDef<SelectMaterial>[] => {
-  const [open, setOpen] = useState(false);
-  const [activeRow, setActiveRow] = useState<SelectMaterial | undefined>();
-  const [loading, setLoading] = useState(false);
+  
 
   const onConfirm = async (row: SelectMaterial) => {
-    setLoading(true);
     await updateMaterial(row.id, { ...row, isActive: !row.isActive });
-    setLoading(false);
-    setOpen(false);
     toast.success(`Successfully updated ${row.name}.`)
     setTimeout(() => {
       triggerRefresh();
     }, 500);
   };
   
-  const getMaterialTypeName = useCallback((materialTypeId: number) => {
+  const getMaterialTypeName = (materialTypeId: number) => {
     if(!materialTypes) return 'unknown';
 
     const materialType = materialTypes.find((mt) => mt.id === materialTypeId);
 
     return materialType?.name ?? 'unknown';
-  }, [materialTypes])
+  };
 
   const updateMaterialStock = async (id: number, stockUpdate: number) => {
     await updateMaterial(id, { stock: stockUpdate });
@@ -123,8 +117,7 @@ export const getColumns = ({ updateItemAction, triggerRefresh, materialTypes }: 
     accessorKey: 'isActive',
     header: 'ACTIVE',
     cell: ({ row }) => {
-      const isActive = row.getValue('isActive') as boolean;
-      return <Badge onClick={() => {setActiveRow(row.original); setOpen(true);}} className={`${isActive ? "bg-green-500" : "bg-red-500"} cursor-pointer`}>{isActive ? "Active" : "Inactive"}</Badge>;
+      return <ActiveAction row={row.original} onConfirm={() => onConfirm(row.original)} />;
     },
   },
   {
@@ -132,15 +125,7 @@ export const getColumns = ({ updateItemAction, triggerRefresh, materialTypes }: 
     cell: ({ row }) => {
     return (
     <>
-      <AlertModal
-          description={`This will ${activeRow?.isActive ? 'deactivate' : 'activate'} ${activeRow?.name}.`}
-          variant="default"
-          isOpen={open}
-          onClose={() => {
-            setOpen(false);
-          } }
-          onConfirm={() => onConfirm(activeRow as SelectMaterial)} 
-          loading={loading} />
+      
       <CellAction data={row.original} updateItemAction={() => updateItemAction(row.original)} triggerRefresh={triggerRefresh} /></>
     )}
   }

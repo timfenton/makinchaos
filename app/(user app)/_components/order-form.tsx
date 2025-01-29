@@ -3,17 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Label } from '@radix-ui/react-label';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod'; // Zod for schema validation
 import { createProductSchema, NewProductExtended } from '@/lib/db/schema/products';
 import { getFilaments, SelectFilament } from '@/lib/db/schema/filaments';
 import { getfonts, SelectFont } from '@/lib/db/schema/fonts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { Icon } from 'lucide-react';
 import { Icons } from '@/components/icons';
 
 const OrderForm = () => {
@@ -33,6 +31,7 @@ const OrderForm = () => {
         setFilamentOptions(data.data);
         setIsLoading(false);
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error(err);
         setIsLoading(false);
       }
@@ -45,6 +44,7 @@ const OrderForm = () => {
         setFontOptions(data);
         setIsLoading(false);
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error(err);
         setIsLoading(false);
       }
@@ -80,7 +80,6 @@ const OrderForm = () => {
 
   // Handle Final Order Submission
   const handleSubmitOrder = () => {
-    console.log({ products, ...orderDetails });
     alert('Order submitted');
   };
 

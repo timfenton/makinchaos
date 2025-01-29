@@ -8,6 +8,7 @@ export const handleMaterialTypeSubmit = async (data: NewMaterialType) => {
     } catch (e){
       const error = e as Error;
 
+      // eslint-disable-next-line no-console
       console.error(error);
     }
 

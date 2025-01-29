@@ -10,7 +10,5 @@ export const metadata = {
 };
 
 export default async function Page({ params }: pageProps) {
-  const searchParams = params;
-
   return <ProfileViewPage />;
 }

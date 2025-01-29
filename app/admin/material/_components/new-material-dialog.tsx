@@ -11,11 +11,10 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { InputTags } from '@/components/ui/input-tags';
 import { Textarea } from '@/components/ui/textarea';
 import { SelectMaterial } from '@/lib/db/schema/materials';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { handleMaterialSubmit } from '../actions';
 import { FileUploader } from '@/components/file-uploader';
@@ -71,7 +70,6 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
   const {
     control,
     handleSubmit,
-    setValue,
     reset,
     watch,
     formState: { errors },
@@ -141,6 +139,7 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
         setOpenDialog(false);
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('Error submitting form:', e);
     }
   };
@@ -303,7 +302,6 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
                   triggerText='Select Categories'
                   disabledText='Select a material type first.'
                   onChange={(selected) => {
-                    console.log('selected changed', selected)
                     field.onChange(selected);
                   }}
                 />

@@ -24,7 +24,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
 
   const onConfirm = async () => {
+    setLoading(true);
     await deleteFilament(data.id);
+    setLoading(false);
     setOpen(false);
     toast.success(`Successfully deleted ${data.name}.`)
     router.refresh();

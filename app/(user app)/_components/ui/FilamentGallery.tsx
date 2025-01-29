@@ -2,12 +2,11 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { FilamentCategories, getFilaments, SelectFilament, FilamentFilters } from '@/lib/db/schema/filaments';
 import { toast } from 'sonner';
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { getMaterials, MaterialFilters, MaterialWithTypes, SelectMaterial } from '@/lib/db/schema/materials';
+import { getMaterials, MaterialFilters, MaterialWithTypes } from '@/lib/db/schema/materials';
 import { MaterialType } from '@/lib/db/schema/materialTypes';
 
 interface FilamentGalleryProps {

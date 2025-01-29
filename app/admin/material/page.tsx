@@ -1,5 +1,5 @@
 import PageContainer from '@/components/layout/page-container';
-import { searchParamsCache, serialize } from '@/lib/searchparams';
+import { searchParamsCache } from '@/lib/searchparams';
 import { SearchParams } from 'nuqs';
 import { getMaterials, MaterialFilters, MaterialWithTypes, SortBy } from '@/lib/db/schema/materials';
 import MaterialListing from './_components/material-listing'
@@ -16,9 +16,6 @@ type pageProps = {
 export default async function Page({ searchParams }: pageProps) {
   // Allow nested RSCs to access the search params (in a type-safe way)
   searchParamsCache.parse((await searchParams));
-
-  // This key is used for invoke suspense if any of the search params changed (used for filters).
-  const key = serialize({ ...(await searchParams) });
 
   const search = searchParamsCache.get('q');
   const categories = searchParamsCache.get('categories');

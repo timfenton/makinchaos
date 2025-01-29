@@ -26,7 +26,6 @@ export async function postMaterialType(newMaterialType: NewMaterialType) {
     {
         await db.update(materialTypes).set(newMaterialType).where(eq(materialTypes.id, newMaterialType.id));
     } else {
-        console.log('inserting new material type', newMaterialType);
         await db.insert(materialTypes).values(newMaterialType);
     }
 }

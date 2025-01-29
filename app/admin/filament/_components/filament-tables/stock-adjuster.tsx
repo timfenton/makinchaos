@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDebounce } from 'react-use';
 import { toast } from "sonner";
 
@@ -18,7 +18,7 @@ export default function StockAdjuster ({ row, onStockChange}: StockAdjusterProps
 
       const firstLoad = useRef(true);
       
-      const [isReady, cancel] = useDebounce(async () => {
+      useDebounce(async () => {
         if(firstLoad.current) {
           firstLoad.current = false;
           return;

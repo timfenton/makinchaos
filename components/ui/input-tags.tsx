@@ -9,7 +9,7 @@ type InputTagsProps = Omit<InputProps, 'onChange'> & {
   onChange: Dispatch<SetStateAction<string[]>>;
 };
 
-export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
+const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
   ({ value, onChange, ...props }, ref) => {
     const [pendingDataPoint, setPendingDataPoint] = useState("");
 
@@ -69,3 +69,7 @@ export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
     );
   }
 );
+
+InputTags.displayName = "InputTags";
+
+export { InputTags };

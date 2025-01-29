@@ -8,10 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { deleteFilament, SelectFilament } from '@/lib/db/schema/filaments';
 import { deleteMaterialType, MaterialType } from '@/lib/db/schema/materialTypes';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -24,10 +22,11 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data, updateItemAction, triggerRefresh }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const router = useRouter();
 
   const onConfirm = async () => {
+    setLoading(true);
     await deleteMaterialType(data.id);
+    setLoading(false);
     setOpen(false);
     toast.success(`Successfully deleted ${data.name}.`)
     setTimeout(() => {

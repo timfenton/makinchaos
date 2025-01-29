@@ -1,7 +1,7 @@
 import { searchParamsCache } from '@/lib/searchparams';
 import { DataTable as FilamentTable } from '@/components/ui/table/data-table';
 import { columns } from './filament-tables/columns';
-import { getFilaments, SelectFilament, SortBy } from '@/lib/db/schema/filaments';
+import { getFilaments, SelectFilament } from '@/lib/db/schema/filaments';
 
 type FilamentListingPage = {};
 

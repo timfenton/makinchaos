@@ -9,6 +9,7 @@ export const handleMaterialSubmit = async (data: NewMaterial) => {
       else await insertMaterial(data);
     } catch (e){
       const error = e as Error;
+      // eslint-disable-next-line no-console
       console.error(error);
     }
   };

@@ -208,8 +208,6 @@ export async function updateMaterial(id: number, materialUpdates: Omit<Partial<N
         .where(eq(materials.id, id))
         .returning();
 
-    console.log('updatedMaterial', updatedMaterial);
-
     return updatedMaterial;
 }
 

@@ -37,7 +37,7 @@ export default function FilamentForm({
   initialData: SelectFilament | null;
   pageTitle: string;
 }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading,] = useState(false);
   const [continuousMode, setContinuousMode] = useState(false);
   const router = useRouter();
 

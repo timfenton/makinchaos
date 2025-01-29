@@ -33,7 +33,7 @@ const MaterialTypeListing: React.FC<MaterialTypeListingProps> = ({ data }) => {
       setUpdateItem(undefined);
       setTimeout(() => refreshMaterials(), 500);
     }
-  }, [openDialog]);
+  }, [openDialog, refreshMaterials]);
 
     return (
         <div className="space-y-4">

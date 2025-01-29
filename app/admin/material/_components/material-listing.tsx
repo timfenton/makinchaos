@@ -33,11 +33,11 @@ export default function MaterialListing({ data, filters: initialFilters, sortBy,
     }, sortBy, true);
     
     setMaterials(response.data);
-  }, [tags, categories, materialType, search])
+  }, [tags, categories, materialType, search, sortBy])
 
   useEffect(() => {
     refreshMaterials();
-  }, [tags, categories, materialType, search]);
+  }, [tags, categories, materialType, search, refreshMaterials]);
   
   useEffect(() => {
       if(updateItem){
@@ -50,7 +50,9 @@ export default function MaterialListing({ data, filters: initialFilters, sortBy,
       setUpdateItem(undefined);
       setTimeout(() => refreshMaterials(), 500);
     }
-  }, [openDialog]);
+  }, [openDialog, refreshMaterials]);
+
+  const columns = getColumns({updateItemAction: (row) => setUpdateItem(row), triggerRefresh: refreshMaterials, materialTypes: materialTypes});
 
   return (
     <div className="space-y-4">
@@ -64,7 +66,7 @@ export default function MaterialListing({ data, filters: initialFilters, sortBy,
         <Separator />
         <MaterialTableAction materialTypes={materialTypes} />
           <MaterialTable
-            columns={getColumns({updateItemAction: (row) => setUpdateItem(row), triggerRefresh: refreshMaterials, materialTypes: materialTypes})}
+            columns={columns}
             data={materials.map((mat) => mat.materials)}
             totalItems={materials.length}
           />

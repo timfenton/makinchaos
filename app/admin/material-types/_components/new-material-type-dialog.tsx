@@ -13,11 +13,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { InputTags } from '@/components/ui/input-tags';
 import { Textarea } from '@/components/ui/textarea';
-import { SelectMaterial } from '@/lib/db/schema/materials';
-import { MaterialType, NewMaterialType, NewMaterialTypeSchema, postMaterialType } from '@/lib/db/schema/materialTypes';
+import { MaterialType } from '@/lib/db/schema/materialTypes';
 
 import { SetStateAction, useEffect, useState } from 'react';
-import { z } from 'zod';
 import { handleMaterialTypeSubmit } from '../actions';
 
 interface MaterialTypeProps {
@@ -31,7 +29,7 @@ export default function NewEditMaterialTypeDialog({ existingItem, openDialog, se
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [id, setId] = useState<number | undefined>();
-  const [errors, setErrors] = useState<Error[]>([]);
+  const [errors,] = useState<Error[]>([]);
 
   useEffect(() => {
     if(openDialog)
@@ -48,7 +46,7 @@ export default function NewEditMaterialTypeDialog({ existingItem, openDialog, se
         setId(undefined);
       }
     }
-  }, [openDialog]);
+  }, [openDialog, existingItem]);
 
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
@@ -77,10 +75,10 @@ export default function NewEditMaterialTypeDialog({ existingItem, openDialog, se
 
             const combinedData = { name, description, categories, tags, id }
 
-            console.log('going to try to submit this', combinedData);
             try{
               await handleMaterialTypeSubmit(combinedData);
             } catch (e) {
+              // eslint-disable-next-line no-console
               console.error(e);
             }
           }}
