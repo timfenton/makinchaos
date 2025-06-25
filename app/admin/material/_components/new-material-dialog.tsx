@@ -117,7 +117,7 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await handleMaterialSubmit({
+            await handleMaterialSubmit({
         ...data,
         id: materialId,
       });
@@ -268,9 +268,8 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
                 name="stock"
                 control={control}
                 rules={{
-                  required: 'Stock is required',
                   validate: (value) =>
-                    Number.isInteger(value) && value > 0 || 'Stock must be a valid number',
+                    Number.isInteger(value) && value >= 0 || 'Stock must be a valid number',
                 }}
                 render={({ field }) => (
                 <Input
