@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, boolean, integer, timestamp } from "drizzle-orm/pg-core";
 import db from "../db";
 import { eq, relations, sql, ilike, SQL, desc, asc, inArray, and } from "drizzle-orm";
 import { materialsToProducts } from "./materialsToProducts";
@@ -17,6 +17,8 @@ export const materials = pgTable('materials', {
   tags: text().array(),
   categories: text().array().notNull(),
   materialTypeId: integer().notNull(),
+  created: timestamp('created').defaultNow().notNull(),
+  modified: timestamp('modified').defaultNow().notNull(),
 }, );
 
 export const materialsRelations = relations(materials, ({many, one}) => ({
@@ -191,12 +193,13 @@ export async function incrementMaterialStock(id: number, amount: number)
         .update(materials)
         .set({
             stock: sql`GREATEST(${materials.stock} + ${amount}, 0)`,
+            modified: sql`NOW()`,
         })
         .where(eq(materials.id, id))
 }
 
 export async function insertMaterial(material: NewMaterial) {
-    const insertedMaterial = await db.insert(materials).values(material);
+    const insertedMaterial = await db.insert(materials).values(material).returning();
 
     return insertedMaterial;
 }
@@ -204,7 +207,7 @@ export async function insertMaterial(material: NewMaterial) {
 export async function updateMaterial(id: number, materialUpdates: Omit<Partial<NewMaterial>,'id'>): Promise<SelectMaterial[]> {
     const updatedMaterial = await db
         .update(materials)
-        .set(materialUpdates)
+        .set({...materialUpdates, modified: sql`NOW()`})
         .where(eq(materials.id, id))
         .returning();
 

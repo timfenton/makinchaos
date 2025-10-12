@@ -11,6 +11,7 @@ import { MaterialType } from '@/lib/db/schema/materialTypes';
 import ExpandableImage from '@/components/ui/expandable-image';
 import { toast } from 'sonner';
 import ActiveAction from './activeAction';
+import { ArrowDownWideNarrowIcon, ArrowUpWideNarrowIcon } from 'lucide-react';
 
 interface GetColumnsProps {
   updateItemAction: (row: SelectMaterial) => void;
@@ -119,6 +120,48 @@ export const getColumns = ({ updateItemAction, triggerRefresh, materialTypes }: 
     cell: ({ row }) => {
       return <ActiveAction row={row.original} onConfirm={() => onConfirm(row.original)} />;
     },
+  },
+  {
+    accessorKey: 'created',
+    enableSorting: true,
+    sortingFn: 'datetime',
+    header: ({ column }) => {
+      return (<Button
+        className='flex flex-row gap-5 items-start w-full justify-between'
+        variant="ghost"
+        onClick={() => {
+          column.toggleSorting(column.getIsSorted() === 'asc');
+        }}
+      >
+        CREATED
+        {column.getIsSorted() === 'asc' ? <ArrowUpWideNarrowIcon /> : column.getIsSorted() === 'desc' ? <ArrowDownWideNarrowIcon /> : ''}
+      </Button>);
+    },
+    cell: ({ row }) => {
+      const createdAt = new Date(row.getValue('created') as string);
+      return createdAt.toLocaleString();
+    },
+  },
+  {
+    accessorKey: 'modified',
+    enableSorting: true,
+    sortingFn: 'datetime',
+    header: ({ column }) => {
+      return (<Button
+        className='flex flex-row gap-5 items-start w-full justify-between'
+        variant="ghost"
+        onClick={() => {
+          column.toggleSorting(column.getIsSorted() === 'asc');
+        }}
+      >
+        MODIFIED
+        {column.getIsSorted() === 'asc' ? <ArrowUpWideNarrowIcon /> : column.getIsSorted() === 'desc' ? <ArrowDownWideNarrowIcon /> : ''}
+      </Button>);
+    },
+    cell: ({ row }) => {
+      const modified = new Date(row.getValue('modified') as string);
+      return modified.toLocaleString();
+    }
   },
   {
     id: 'actions',

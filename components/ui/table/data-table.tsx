@@ -23,13 +23,16 @@ import {
 import {
   ColumnDef,
   flexRender,
+  SortingState,
   getCoreRowModel,
   getPaginationRowModel,
   PaginationState,
-  useReactTable
+  useReactTable,
+  getSortedRowModel
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { parseAsInteger, useQueryState } from 'nuqs';
+import React from 'react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -62,6 +65,8 @@ export function DataTable<TData, TValue>({
     pageSize: pageSize
   };
 
+  const [sorting, setSorting] = React.useState<SortingState>([])
+
   const pageCount = Math.ceil(totalItems / pageSize);
 
   const handlePaginationChange = (
@@ -83,11 +88,14 @@ export function DataTable<TData, TValue>({
     columns,
     pageCount: pageCount,
     state: {
-      pagination: paginationState
+      pagination: paginationState,
+      sorting,
     },
+    onSortingChange: setSorting,
     onPaginationChange: disablePaging ? handlePaginationChange : () => {},
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     manualPagination: false,
     manualFiltering: true
   });
