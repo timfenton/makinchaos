@@ -123,22 +123,6 @@ export type Product = {
 
 export const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
-    url: '/admin/overview',
-    icon: 'dashboard',
-    isActive: false,
-    shortcut: ['d', 'd'],
-    items: [] // Empty array as there are no child items for Dashboard
-  },
-  {
-    title: 'Users',
-    url: '/admin/employee',
-    icon: 'user',
-    shortcut: ['e', 'e'],
-    isActive: false,
-    items: [] // No child items
-  },
-  {
     title: 'Materials',
     url: '/admin/material',
     icon: 'materials',
@@ -176,10 +160,10 @@ export const navItems: NavItem[] = [
     ]
   },
   {
-    title: 'Kanban',
-    url: '/admin/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
+    title: 'Users',
+    url: '/admin/employee',
+    icon: 'user',
+    shortcut: ['e', 'e'],
     isActive: false,
     items: [] // No child items
   }
