@@ -67,7 +67,19 @@ export const getColumns = ({ updateItemAction, triggerRefresh, materialTypes }: 
   },
   {
     accessorKey: 'stock',
-    header: 'STOCK',
+    header: ({ column }) => {
+      return (<Button
+        className='flex flex-row gap-5 items-start justify-between'
+        variant="ghost"
+        onClick={() => {
+          column.toggleSorting(column.getIsSorted() === 'asc');
+        }}
+      >
+        STOCK
+        {column.getIsSorted() === 'asc' ? <ArrowUpWideNarrowIcon /> : column.getIsSorted() === 'desc' ? <ArrowDownWideNarrowIcon /> : ''}
+      </Button>);
+    },
+    sortingFn: 'alphanumeric',
     cell: ({ row }) => <StockAdjuster row={row} onStockChange={updateMaterialStock} /> 
   },
   {
