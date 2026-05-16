@@ -42,13 +42,13 @@ const FilamentGallery = ({materialTypes}: FilamentGalleryProps) => {
       ));
     
 
-    const handleCopyToClipboard = (name: string) => {
-        navigator.clipboard.writeText(name)
+    const handleCopyToClipboard = (textToCopy: string) => {
+        navigator.clipboard.writeText(textToCopy)
           .then(() => {
-            toast(`Copied "${name}" to clipboard!`);
+            toast(`Copied "${textToCopy}" to clipboard!`);
           })
           .catch((err) => {
-            toast(`Failed to copy text: ${name}`, {});
+            toast(`Failed to copy text: ${textToCopy}`, {});
           });
       };
 
@@ -79,10 +79,10 @@ const FilamentGallery = ({materialTypes}: FilamentGalleryProps) => {
             key={materials.id}
             className="relative group overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl"
           >
-            <div className="w-full aspect-[1/1] relative" onClick={() => handleCopyToClipboard(materials.name)}>
+            <div className="w-full aspect-[1/1] relative" onClick={() => handleCopyToClipboard(materials.name || materials.id.toString())}>
               {materials.imageUrl && <Image
                 src={materials.imageUrl}
-                alt={materials.name}
+                alt={materials.id.toString()}
                 className="transition-transform group-hover:scale-110 duration-500"
                 style={{
                   objectFit: 'cover', 
