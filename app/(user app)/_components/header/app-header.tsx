@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils"
 import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu"
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import ChaosLogo from "../logo"
 import { UserNav } from "@/components/layout/user-nav"
 import ThemeToggle from "@/components/layout/ThemeToggle/theme-toggle"
@@ -15,6 +17,14 @@ const AppHeader: React.FC<{className: string}> = ({className}) => {
     <div className={cn(className, 'flex flex-row w-full')}>
       <ChaosLogo className="px-4 md:px-10 py-1 md:py-4" size={50} />
       <div className="w-full flex flex-row justify-end p-10 gap-6">
+          <div className="flex items-center gap-2">
+            <Link href="/colors">
+              <Button variant="ghost">Colors</Button>
+            </Link>
+            <Link href="/patterns">
+              <Button variant="ghost">Patterns</Button>
+            </Link>
+          </div>
           <ThemeToggle />
           <UserNav />
       </div>
