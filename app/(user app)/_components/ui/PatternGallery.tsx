@@ -49,7 +49,7 @@ const PatternGallery = () => {
               {materials.imageUrl && (
                 <Image
                   src={materials.imageUrl}
-                  alt={materials.name}
+                  alt={materials.id.toString()}
                   className="transition-transform group-hover:scale-110 duration-500"
                   style={{ objectFit: 'cover' }}
                   fill
@@ -59,7 +59,7 @@ const PatternGallery = () => {
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              {materials.name} — ID: {materials.id}
+              ID: {materials.id}
             </div>
           </div>
         ))}

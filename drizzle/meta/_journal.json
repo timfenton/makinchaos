@@ -50,6 +50,13 @@
       "when": 1760297496177,
       "tag": "0006_normal_rictor",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1778969155852,
+      "tag": "0007_make-material-fields-optional",
+      "breakpoints": true
     }
   ]
 }

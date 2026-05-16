@@ -9,8 +9,8 @@ import { MaterialType, materialTypes } from "./materialTypes";
 export const materials = pgTable('materials', {
   id: serial().primaryKey(),
   isActive: boolean().default(true),
-  name: text().notNull(),
-  description: text().notNull(),
+  name: text(),
+  description: text(),
   imageUrl: text().notNull(),
   buyUrl: text(),
   stock: integer().notNull().default(1),

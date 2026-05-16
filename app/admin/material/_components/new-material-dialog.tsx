@@ -35,8 +35,8 @@ interface MaterialProps {
 }
 
 interface FormValues {
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   categories: string[];
   tags: string[];
   materialTypeId: number;
@@ -122,9 +122,9 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
         id: materialId,
       });
 
-      toast.success(`Successfully added ${data.name} to material library`)
+      toast.success(`Successfully added ${data.name || 'material'} to material library`)
 
-      if(continuousMode)
+      if (continuousMode)
       {
         reset({
           name: '',
@@ -215,7 +215,6 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
             <Controller
               name="name"
               control={control}
-              rules={{ required: 'Name is required' }}
               render={({ field }) => (
                 <Input
                   {...field}

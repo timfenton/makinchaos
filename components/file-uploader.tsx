@@ -108,7 +108,7 @@ export function FileUploader({
   onUpload,
   progresses,
   accept = { 'image/*': [] },
-  maxSize = 1024 * 1024 * 2,
+  maxSize = 1024 * 1024 * 10,
   maxFiles = 1,
   multiple = false,
   disabled = false,
