@@ -7,7 +7,7 @@ import { useDebounce } from 'react-use';
 import { toast } from "sonner";
 
 interface StockAdjusterProps {
-  row: { original: { id: number, name: string, stock: number } },
+  row: { original: { id: number, name: string | null, stock: number } },
   onStockChange: (id:number, stock: number) => Promise<void>,
 }
 
