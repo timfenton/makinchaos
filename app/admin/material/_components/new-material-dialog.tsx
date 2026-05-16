@@ -172,7 +172,7 @@ export default function NewEditMaterialDialog({ existingItem, openDialog, setOpe
                   }}
                   maxFiles={1}
                   multiple={false}
-                  maxSize={4 * 1024 * 1024}
+                  maxSize={10 * 1024 * 1024}
                   onUpload={async (files) => {
                     const uploadUrls = await uploadFiles(files);
                     if (!uploadUrls || uploadUrls.length < 1) throw new Error('Failed to upload file.');

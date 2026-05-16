@@ -15,22 +15,24 @@ import { cn, formatBytes } from '@/lib/utils';
 // Helper function to compress image if over 1MB
 async function compressImageIfNeeded(file: File): Promise<File> {
   // Only process images over 1MB
-  if (!file.type.startsWith('image/') || file.size <= 1024 * 1024) {
+  const targetBytes = 1024 * 1024;
+  if (!file.type.startsWith('image/') || file.size <= targetBytes) {
     return file;
   }
 
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const img = new window.Image();
       img.src = event.target?.result as string;
-      img.onload = () => {
+      img.onload = async () => {
         const canvas = document.createElement('canvas');
-        let { width, height } = img;
+        let width = img.width;
+        let height = img.height;
 
-        // Scale down if image is very large, maintaining aspect ratio
-        const maxDimension = 2560; // Max dimension in pixels
+        // Limit very large images before compression to keep the process efficient
+        const maxDimension = 2560;
         if (width > maxDimension || height > maxDimension) {
           if (width > height) {
             height = Math.round((height * maxDimension) / width);
@@ -41,32 +43,76 @@ async function compressImageIfNeeded(file: File): Promise<File> {
           }
         }
 
-        canvas.width = width;
-        canvas.height = height;
+        const drawBlob = (quality: number, drawWidth: number, drawHeight: number) =>
+          new Promise<Blob | null>((blobResolve) => {
+            canvas.width = drawWidth;
+            canvas.height = drawHeight;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              blobResolve(null);
+              return;
+            }
+            ctx.clearRect(0, 0, drawWidth, drawHeight);
+            ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
+            canvas.toBlob(
+              (blob) => blobResolve(blob),
+              'image/webp',
+              quality
+            );
+          });
 
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
+        let currentQuality = 0.8;
+        let currentWidth = width;
+        let currentHeight = height;
+        let bestBlob: Blob | null = null;
+        let bestSize = Infinity;
+        let resultBlob: Blob | null = null;
+
+        while (true) {
+          const blob = await drawBlob(currentQuality, currentWidth, currentHeight);
+          if (!blob) break;
+
+          if (blob.size < bestSize) {
+            bestSize = blob.size;
+            bestBlob = blob;
+          }
+
+          if (blob.size <= targetBytes) {
+            resultBlob = blob;
+            break;
+          }
+
+          if (currentQuality > 0.5) {
+            currentQuality = Math.max(currentQuality - 0.1, 0.5);
+            continue;
+          }
+
+          if (currentWidth > 800 && currentHeight > 800) {
+            currentWidth = Math.round(currentWidth * 0.9);
+            currentHeight = Math.round(currentHeight * 0.9);
+            continue;
+          }
+
+          if (currentQuality > 0.35) {
+            currentQuality = Math.max(currentQuality - 0.05, 0.35);
+            continue;
+          }
+
+          break;
         }
 
-        // Convert to WebP with 80% quality for efficient compression
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              const fileName = file.name.replace(/\.[^/.]+$/, '') || 'image';
-              const compressedFile = new File(
-                [blob],
-                `${fileName}.webp`,
-                { type: 'image/webp' }
-              );
-              resolve(compressedFile);
-            } else {
-              resolve(file);
-            }
-          },
-          'image/webp',
-          0.8
-        );
+        const finalBlob = resultBlob ?? bestBlob;
+        if (finalBlob && finalBlob.size < file.size) {
+          const fileName = file.name.replace(/\.[^/.]+$/, '') || 'image';
+          const compressedFile = new File(
+            [finalBlob],
+            `${fileName}.webp`,
+            { type: 'image/webp' }
+          );
+          resolve(compressedFile);
+        } else {
+          resolve(file);
+        }
       };
       img.onerror = () => resolve(file);
     };
@@ -155,6 +201,8 @@ export function FileUploader({
           preview: URL.createObjectURL(file),
         })
       );
+
+      console.log('Accepted files:', newFiles);  
 
       setFiles((prev) => {
         if (prev.length === 1 && !multiple) {
