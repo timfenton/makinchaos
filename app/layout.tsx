@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
+// @ts-ignore: allow side-effect css import without type declarations
 import './globals.css';
 
 export const metadata: Metadata = {
